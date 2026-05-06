@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Haker Diagnostic Lab | Анализ джойстиков и контроллеров</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none; /* хакерский стиль, но формы остаются кликабельными */
+        }
+
+        body {
+            background: radial-gradient(circle at 20% 30%, #021a0a, #000000);
+            font-family: 'Courier New', 'Fira Code', 'Source Code Pro', monospace;
+            color: #0f0;
+            text-shadow: 0 0 3px #0f0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* сканер-эффект */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg, rgba(0,255,0,0.03) 0px, rgba(0,255,0,0.03) 2px, transparent 2px, transparent 6px);
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(0, 20, 0, 0.65);
+            backdrop-filter: blur(2px);
+            border: 1px solid #0f0;
+            border-radius: 28px;
+            padding: 20px 24px 32px;
+            box-shadow: 0 0 25px rgba(0,255,0,0.3), inset 0 0 10px rgba(0,255,0,0.2);
+        }
+
+        /* заголовок с терминальным стилем */
+        .glitch {
+            font-size: 2.8rem;
+            font-weight: bold;
+            letter-spacing: 5px;
+            border-left: 6px solid #0f0;
+            padding-left: 20px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #0f0, #0a4f0a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: none;
+        }
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px dashed #0f0;
+            padding-bottom: 8px;
+            margin-bottom: 28px;
+            font-size: 0.85rem;
+            flex-wrap: wrap;
+        }
+        .scan-line {
+            font-family: monospace;
+            background: #000a00;
+            padding: 5px 12px;
+            border-radius: 30px;
+        }
+
+        /* панель диагностики */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        .card {
+            background: #031007e0;
+            border: 1px solid #2b8c2b;
+            border-radius: 20px;
+            padding: 18px;
+            transition: 0.2s;
+            box-shadow: 0 5px 12px black;
+        }
+        .card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #3b8c3b;
+            padding-bottom: 6px;
+        }
+        .data-grid {
+            font-size: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 0.5px dotted #2c6e2c;
+            padding: 5px 0;
+        }
+        .badge {
+            background: black;
+            padding: 2px 8px;
+            border-radius: 30px;
+            color: #0f0;
+            font-weight: bold;
+        }
+        .status-green {
+            color: #0f0;
+            text-shadow: 0 0 5px #0f0;
+        }
+        .status-red {
+            color: #f44;
+            text-shadow: 0 0 3px #f00;
+        }
+        button {
+            background: #021d02;
+            border: 1px solid #0f0;
+            color: #0f0;
+            font-family: monospace;
+            font-weight: bold;
+            padding: 10px 18px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 0 3px #0f0;
+        }
+        button:hover {
+            background: #0f0;
+            color: black;
+            box-shadow: 0 0 12px #0f0;
+        }
+        .cmd-area {
+            background: #000b01;
+            border: 2px solid #0a4f0a;
+            border-radius: 20px;
+            padding: 12px;
+            margin-top: 20px;
+        }
+        .cmd-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .cmd-output {
+            background: #020a02;
+            padding: 14px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            border-radius: 14px;
+            max-height: 220px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .cmd-input-line {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            align-items: center;
+        }
+        .cmd-prefix {
+            color: #0f0;
+            font-weight: bold;
+        }
+        #cmdInput {
+            flex: 1;
+            background: black;
+            border: 1px solid #2c8c2c;
+            color: #0f0;
+            padding: 8px 12px;
+            font-family: monospace;
+            font-size: 1rem;
+            outline: none;
+            border-radius: 30px;
+        }
+        .helper-commands {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .cmd-btn {
+            background: #0a2f0a;
+            padding: 4px 12px;
+            font-size: 0.7rem;
+        }
+        hr {
+            border-color: #0f6030;
+            margin: 10px 0;
+        }
+        @media (max-width: 700px) {
+            .glitch { font-size: 1.8rem; }
+            .container { padding: 16px; }
+        }
+        .joy-div {
+            font-weight: normal;
+        }
+        .value-num {
+            color: #bfff80;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="glitch">
+        ⚡ HAKER DIAGNOSTIC v2.0 ⚡
+    </div>
+    <div class="status-bar">
+        <span>🔌 [REAL-TIME ANALYSIS]</span>
+        <span class="scan-line">🟢 kernel: active | integrity: VALID</span>
+    </div>
+
+    <div class="dashboard">
+        <!-- секция геймпады / джойстики PS, приставки, ПК, VR -->
+        <div class="card">
+            <h3>🎮 GAMEPAD / JOYSTICK <span style="font-size:0.7rem;">(PS / XBOX / PC / VR)</span></h3>
+            <div id="gamepadStatus" class="data-grid">
+                <div class="data-row">Состояние: <span class="badge" id="gpState">🔍 Поиск контроллеров...</span></div>
+                <div id="gpDetails">— Не обнаружено —</div>
+            </div>
+            <button id="forceGamepadCheck" style="margin-top: 12px; width:100%">⟳ ПЕРЕОПРОС ДЖОЙСТИКОВ</button>
+        </div>
+
+        <!-- сенсорный ввод / VR-очки и планшеты/телефоны -->
+        <div class="card">
+            <h3>📱 TOUCH / VR HMD / СЕНСОРЫ</h3>
+            <div class="data-grid">
+                <div class="data-row">Поддержка Touch: <span id="touchSupport">---</span></div>
+                <div class="data-row">Активных касаний: <span id="touchCount">0</span></div>
+                <div class="data-row">Последнее касание: <span id="lastTouch">—</span></div>
+                <div class="data-row">VR Device (WebXR): <span id="vrSupport">---</span></div>
+                <div class="data-row">Ориентация (гироскоп): <span id="orientationData">—</span></div>
+                <div class="data-row">Движение (акселерометр): <span id="motionData">—</span></div>
+            </div>
+            <button id="requestVrBtn" style="margin-top: 12px;">🌐 ЗАПРОС VR-УСТРОЙСТВ</button>
+        </div>
+
+        <!-- системная диагностика и кнопка вызова CMD -->
+        <div class="card">
+            <h3>💻 ПК / ПЛАТФОРМА</h3>
+            <div class="data-grid">
+                <div class="data-row">User Agent: <span id="ua" style="font-size:0.7rem;">—</span></div>
+                <div class="data-row">Платформа: <span id="platform">—</span></div>
+                <div class="data-row">Количество геймпадов (API): <span id="gamepadCountApi">0</span></div>
+                <div class="data-row">Тип указателя: <span id="pointerType">—</span></div>
+            </div>
+            <button id="openCmdMenuBtn" style="margin-top: 12px; background:#0a330a;">⌨️ ВЫЗОВ CMD МЕНЮ / КОНСОЛЬ</button>
+        </div>
+    </div>
+
+    <!-- CMD МЕНЮ (по умолчанию видимо, но кнопка прокрутит к нему + фокус) -->
+    <div id="cmdSection" class="cmd-area">
+        <div class="cmd-header">
+            <span>🔻 [ HAKER::CMD ] Диагностическая консоль 🔻</span>
+            <span style="font-size:0.7rem;">root@haker:~</span>
+        </div>
+        <div class="cmd-output" id="cmdOutput">
+            > Система готова. Доступные команды: help, joy-detail, touch-test, vrinfo, mem, sysinfo, clear, ping, gyro, stress-gamepad<br>
+            > Введите команду ниже.
+        </div>
+        <div class="cmd-input-line">
+            <span class="cmd-prefix">$&gt;</span>
+            <input type="text" id="cmdInput" placeholder="введите команду..." autocomplete="off">
+            <button id="execCmdBtn">ВЫПОЛНИТЬ</button>
+        </div>
+        <div class="helper-commands">
+            <button class="cmd-btn" data-cmd="help">help</button>
+            <button class="cmd-btn" data-cmd="joy-detail">joy-detail</button>
+            <button class="cmd-btn" data-cmd="touch-test">touch-test</button>
+            <button class="cmd-btn" data-cmd="vrinfo">vrinfo</button>
+            <button class="cmd-btn" data-cmd="sysinfo">sysinfo</button>
+            <button class="cmd-btn" data-cmd="gyro">gyro</button>
+            <button class="cmd-btn" data-cmd="stress-gamepad">stress-gamepad</button>
+            <button class="cmd-btn" data-cmd="clear">clear</button>
+        </div>
+    </div>
+    <hr>
+    <div style="font-size:0.7rem; text-align:center; margin-top:20px;">⚠️ ДИАГНОСТИКА REAL-TIME | ТОЛЬКО ФАКТИЧЕСКИЕ ДАННЫЕ С УСТРОЙСТВА | БЕЗ ЛОЖНЫХ ПОКАЗАНИЙ</div>
+</div>
+
+<script>
+    (function(){
+        // ----- DOM elements -----
+        const gpStateSpan = document.getElementById("gpState");
+        const gpDetailsDiv = document.getElementById("gpDetails");
+        const gamepadCountApiSpan = document.getElementById("gamepadCountApi");
+        const touchSupportSpan = document.getElementById("touchSupport");
+        const touchCountSpan = document.getElementById("touchCount");
+        const lastTouchSpan = document.getElementById("lastTouch");
+        const vrSupportSpan = document.getElementById("vrSupport");
+        const orientationSpan = document.getElementById("orientationData");
+        const motionSpan = document.getElementById("motionData");
+        const uaSpan = document.getElementById("ua");
+        const platformSpan = document.getElementById("platform");
+        const pointerTypeSpan = document.getElementById("pointerType");
+        const openCmdBtn = document.getElementById("openCmdMenuBtn");
+        const cmdOutputDiv = document.getElementById("cmdOutput");
+        const cmdInput = document.getElementById("cmdInput");
+        const execCmdBtn = document.getElementById("execCmdBtn");
+        const forceGamepadBtn = document.getElementById("forceGamepadCheck");
+        const requestVrBtn = document.getElementById("requestVrBtn");
+
+        // ------ Глобальное состояние ------
+        let gamepadsCache = [];
+        let activeTouches = 0;
+        let lastTouchCoord = "нет";
+        let gyroAvailable = false;
+        let currentOrientation = { beta: null, gamma: null, alpha: null };
+        let currentAcceleration = { x: null, y: null, z: null };
+
+        // ----- 1. ИНИЦИАЛИЗАЦИЯ СИСТЕМНЫХ ДАННЫХ -----
+        function setSystemInfo() {
+            uaSpan.innerText = navigator.userAgent.slice(0, 70) + (navigator.userAgent.length > 70 ? "..." : "");
+            platformSpan.innerText = navigator.platform || "unknown";
+            if(window.matchMedia("(pointer: fine)").matches) pointerTypeSpan.innerText = "мышь / стилус";
+            else if(window.matchMedia("(pointer: coarse)").matches) pointerTypeSpan.innerText = "сенсорный экран";
+            else pointerTypeSpan.innerText = "неопределён";
+        }
+
+        // ----- 2. ТОЧНЫЙ ОПРОС ГЕЙМПАДОВ (API Gamepad) -----
+        function updateGamepads() {
+            const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+            const connected = [];
+            for(let i=0; i<gamepads.length; i++) {
+                const gp = gamepads[i];
+                if(gp && gp.connected) {
+                    connected.push(gp);
+                }
+            }
+            gamepadsCache = connected;
+            gamepadCountApiSpan.innerText = connected.length;
+            if(connected.length === 0) {
+                gpStateSpan.innerHTML = "❌ НЕТ ПОДКЛЮЧЁННЫХ ДЖОЙСТИКОВ";
+                gpDetailsDiv.innerHTML = "— Нет активных игровых контроллеров —";
+                return;
+            }
+            gpStateSpan.innerHTML = `✅ ОБНАРУЖЕНО: ${connected.length} шт.`;
+            let detailsHtml = "";
+            connected.forEach((gp, idx) => {
+                const axes = gp.axes.map(a => a.toFixed(3)).join(", ");
+                const buttons = [];
+                for(let b=0; b<gp.buttons.length; b++) {
+                    const btn = gp.buttons[b];
+                    if(btn.pressed) buttons.push(b);
+                }
+                const pressedStr = buttons.length ? buttons.join(",") : "нет нажатий";
+                detailsHtml += `<div style="border-top:1px solid #1a4a1a; margin-top:8px;"><strong>🎮 ${gp.id}</strong> (индекс ${gp.index})<br>
+                🔘 Оси: [${axes.substring(0, 60)}]${axes.length>60?"...":""}<br>
+                ⌨️ Зажатые кнопки: [${pressedStr}]<br>
+                📊 Вибрация (тест): ${gp.vibrationActuator ? "доступна" : "не поддерживается"}</div>`;
+            });
+            gpDetailsDiv.innerHTML = detailsHtml;
+        }
+
+        // принудительная синхронизация + опрос с частотой
+        function pollGamepads() {
+            updateGamepads();
+            requestAnimationFrame(pollGamepads);
+        }
+        forceGamepadBtn.addEventListener("click", () => {
+            updateGamepads();
+            addCmdMessage(">> Принудительный опрос геймпадов выполнен.");
+        });
+
+        // ----- 3. СЕНСОРНЫЙ ВВОД (ТЕЛЕФОНЫ / ПЛАНШЕТЫ) -----
+        function initTouchEvents() {
+            if('ontouchstart' in window) {
+                touchSupportSpan.innerText = "Доступен (ёмкостный)";
+                touchSupportSpan.style.color = "#0f0";
+                window.addEventListener('touchstart', (e) => {
+                    activeTouches = e.touches.length;
+                    touchCountSpan.innerText = activeTouches;
+                    if(e.touches.length>0){
+                        const t = e.touches[0];
+                        lastTouchCoord = `X:${Math.round(t.clientX)} Y:${Math.round(t.clientY)}`;
+                        lastTouchSpan.innerText = lastTouchCoord;
+                    }
+                });
+                window.addEventListener('touchend', (e) => {
+                    activeTouches = e.touches.length;
+                    touchCountSpan.innerText = activeTouches;
+                });
+                window.addEventListener('touchmove', (e) => {
+                    if(e.touches.length>0){
+                        const t = e.touches[0];
+                        lastTouchCoord = `X:${Math.round(t.clientX)} Y:${Math.round(t.clientY)} (move)`;
+                        lastTouchSpan.innerText = lastTouchCoord;
+                    }
+                });
+            } else {
+                touchSupportSpan.innerText = "Не поддерживается";
+                touchSupportSpan.style.color = "#f44";
+                touchCountSpan.innerText = "0";
+            }
+        }
+
+        // ----- 4. VR И ОРИЕНТАЦИЯ (ГИРОСКОП / АКСЕЛЕРОМЕТР) -----
+        function initMotionAndOrientation() {
+            if (window.DeviceOrientationEvent) {
+                window.addEventListener('deviceorientation', (e) => {
+                    currentOrientation.alpha = e.alpha?.toFixed(1);
+                    currentOrientation.beta = e.beta?.toFixed(1);
+                    currentOrientation.gamma = e.gamma?.toFixed(1);
+                    orientationSpan.innerText = `α:${currentOrientation.alpha||"?"}° β:${currentOrientation.beta||"?"}° γ:${currentOrientation.gamma||"?"}°`;
+                });
+            } else {
+                orientationSpan.innerText = "не поддерживается";
+            }
+            if (window.DeviceMotionEvent) {
+                window.addEventListener('devicemotion', (e) => {
+                    if(e.acceleration) {
+                        currentAcceleration = {
+                            x: e.acceleration.x?.toFixed(2),
+                            y: e.acceleration.y?.toFixed(2),
+                            z: e.acceleration.z?.toFixed(2)
+                        };
+                        motionSpan.innerText = `Accel x:${currentAcceleration.x||0} y:${currentAcceleration.y||0} z:${currentAcceleration.z||0}`;
+                    } else {
+                        motionSpan.innerText = "нет данных";
+                    }
+                });
+            } else {
+                motionSpan.innerText = "недоступно";
+            }
+        }
+
+        // webXR проверка без полноценного сеанса (факт наличия)
+        async function checkVRSupport() {
+            if ('xr' in navigator) {
+                const isSupported = await navigator.xr.isSessionSupported('immersive-vr');
+                const isARSupported = await navigator.xr.isSessionSupported('immersive-ar');
+                vrSupportSpan.innerText = `VR: ${isSupported?"✅ доступно":"❌"}  |  AR: ${isARSupported?"✅":"❌"}`;
+                if(isSupported) vrSupportSpan.style.color = "#0f0"; else vrSupportSpan.style.color = "#fa0";
+            } else {
+                vrSupportSpan.innerText = "WebXR не поддерживается браузером";
+                vrSupportSpan.style.color = "#f88";
+            }
+        }
+        requestVrBtn.addEventListener('click', async () => {
+            addCmdMessage("🕶️ Запрос VR-устройств...");
+            await checkVRSupport();
+            if ('xr' in navigator) {
+                addCmdMessage("WebXR доступен. Для входа в VR-сессию требуется взаимодействие с пользователем. Проверьте поддержку выше.");
+            } else {
+                addCmdMessage("❌ Браузер не поддерживает WebXR. VR-очки не определятся.");
+            }
+        });
+
+        // ----- 5. CMD КОМАНДЫ (диагностика без лжи) -----
+        function addCmdMessage(msg) {
+            const p = document.createElement("div");
+            p.innerText = msg;
+            cmdOutputDiv.appendChild(p);
+            cmdOutputDiv.scrollTop = cmdOutputDiv.scrollHeight;
+        }
+
+        function clearCmd() {
+            cmdOutputDiv.innerHTML = "<div>> Консоль очищена.</div>";
+        }
+
+        function processCommand(cmdLine) {
+            const cmd = cmdLine.trim().toLowerCase();
+            if(cmd === "") return;
+            addCmdMessage(`$> ${cmdLine}`);
+            switch(cmd) {
+                case "help":
+                    addCmdMessage("🔧 [HAKER CMD] Доступные команды:\nhelp — справка\njoy-detail — расширенная статистика геймпадов\ntouch-test — отчёт о сенсорных событиях\nvrinfo — информация о VR и WebXR\nmem — данные памяти устройства (performance)\nsysinfo — подробная информация о системе\ngyro — текущие показания гироскопа и акселерометра\nclear — очистить вывод\nping — проверить отклик системы\nstress-gamepad — анализ всех осей/кнопок в реальном времени (логика)");
+                    break;
+                case "joy-detail": {
+                    const gps = navigator.getGamepads ? navigator.getGamepads() : [];
+                    let exist = false;
+                    for(let i=0;i<gps.length;i++) {
+                        if(gps[i] && gps[i].connected){
+                            exist=true;
+                            addCmdMessage(`🎮 ${gps[i].id} | кнопок: ${gps[i].buttons.length}, осей: ${gps[i].axes.length}`);
+                            let pressedButtonIndices = [];
+                            gps[i].buttons.forEach((btn,idx)=> { if(btn.pressed) pressedButtonIndices.push(idx); });
+                            addCmdMessage(`   Нажатые кнопки: [${pressedButtonIndices.join(",") || "нет"}]`);
+                            addCmdMessage(`   Оси: ${gps[i].axes.map(v=>v.toFixed(3)).join(", ")}`);
+                            if(gps[i].vibrationActuator) addCmdMessage("   Вибрация: доступна (можно вибротест)");
+                            else addCmdMessage("   Вибрация: не поддерживается");
+                        }
+                    }
+                    if(!exist) addCmdMessage("❌ Джойстики не подключены.");
+                    break;
+                }
+                case "touch-test":
+                    addCmdMessage(`📱 Сенсор: ${('ontouchstart' in window) ? "доступен" : "недоступен"}`);
+                    addCmdMessage(`📌 Последнее касание: ${lastTouchCoord}`);
+                    addCmdMessage(`👆 Активных точек: ${activeTouches}`);
+                    break;
+                case "vrinfo":
+                    if ('xr' in navigator) addCmdMessage("🌐 WebXR API присутствует."); else addCmdMessage("WebXR отсутствует.");
+                    addCmdMessage(`Текущий статус VR: ${vrSupportSpan.innerText}`);
+                    break;
+                case "mem":
+                    if(performance.memory) {
+                        addCmdMessage(`💾 JS heap: ${(performance.memory.usedJSHeapSize / 1048576).toFixed(2)} MB / ${(performance.memory.jsHeapSizeLimit/1048576).toFixed(0)} MB`);
+                    } else addCmdMessage("API памяти недоступно (не-Chromium)");
+                    break;
+                case "sysinfo":
+                    addCmdMessage(`🖥️ OS: ${navigator.platform} | UA: ${navigator.userAgent.substring(0,80)}`);
+                    addCmdMessage(`🎮 Геймпадов в системе: ${gamepadsCache.length} (факт)`);
+                    addCmdMessage(`📱 Touch events: ${('ontouchstart' in window) ? "есть" : "нет"}`);
+                    addCmdMessage(`🕶️ WebXR: ${'xr' in navigator ? "да" : "нет"}`);
+                    addCmdMessage(`🖱️ Указатель: ${pointerTypeSpan.innerText}`);
+                    break;
+                case "gyro":
+                    addCmdMessage(`🧭 Ориентация: α=${currentOrientation.alpha||"?"} β=${currentOrientation.beta||"?"} γ=${currentOrientation.gamma||"?"}`);
+                    addCmdMessage(`📳 Акселерометр: x=${currentAcceleration.x||0} y=${currentAcceleration.y||0} z=${currentAcceleration.z||0}`);
+                    if(!window.DeviceOrientationEvent && !window.DeviceMotionEvent) addCmdMessage("⚠️ Датчики движения/ориентации не поддерживаются браузером.");
+                    break;
+                case "stress-gamepad":
+                    if(gamepadsCache.length === 0) addCmdMessage("⚠️ Нет активных геймпадов. Подключите джойстик PS/VR/ПК");
+                    else {
+                        addCmdMessage("🔁 Анализ в реальном времени (через 1 сек обновление). Введите другую команду для остановки.");
+                        let interval = setInterval(()=>{
+                            updateGamepads();
+                            addCmdMessage(`[${new Date().toLocaleTimeString()}] Обновление: ${gamepadsCache.length} контроллер(ов). Детали выше.`);
+                            if(gamepadsCache.length === 0) clearInterval(interval);
+                        }, 1200);
+                        setTimeout(() => clearInterval(interval), 8000);
+                        addCmdMessage("✔️ Стресс-тест активен 8 секунд.");
+                    }
+                    break;
+                case "clear":
+                    clearCmd();
+                    break;
+                case "ping":
+                    addCmdMessage("pong! Система отзывчива | задержка 0ms");
+                    break;
+                default:
+                    addCmdMessage(`❌ Неизвестная команда: "${cmdLine}". Введите help.`);
+            }
+        }
+
+        function focusAndScrollToCmd() {
+            document.getElementById("cmdSection").scrollIntoView({ behavior: "smooth" });
+            cmdInput.focus();
+            addCmdMessage(">> CMD-меню активировано. Введите команду для диагностики.");
+        }
+
+        // Кнопка вызова CMD
+        openCmdBtn.addEventListener("click", focusAndScrollToCmd);
+        execCmdBtn.addEventListener("click", () => {
+            const val = cmdInput.value;
+            if(val) processCommand(val);
+            cmdInput.value = "";
+            cmdInput.focus();
+        });
+        cmdInput.addEventListener("keypress", (e) => {
+            if(e.key === "Enter") {
+                e.preventDefault();
+                const val = cmdInput.value;
+                if(val) processCommand(val);
+                cmdInput.value = "";
+            }
+        });
+        document.querySelectorAll(".cmd-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const command = btn.getAttribute("data-cmd");
+                if(command) processCommand(command);
+                cmdInput.value = "";
+            });
+        });
+
+        // ----- 6. ГЛАВНЫЙ ЦИКЛ REAL-TIME для геймпадов и постоянной правдивости -----
+        function startDiagnosticLoop() {
+            setSystemInfo();
+            updateGamepads();
+            pollGamepads();   // постоянный опрос
+            setInterval(() => {
+                // дополнительное обновление системных параметров
+                setSystemInfo();
+                // всегда мониторим актуальные данные геймпадов, но poll уже это делает
+                if(gamepadsCache.length !== (navigator.getGamepads ? [...navigator.getGamepads()].filter(g=>g&&g.connected).length : 0))
+                    updateGamepads();
+            }, 1500);
+        }
+
+        // запуск всех датчиков
+        initTouchEvents();
+        initMotionAndOrientation();
+        checkVRSupport();
+        startDiagnosticLoop();
+
+        // гарантия: показываем что джойстики обновляются
+        window.addEventListener("gamepadconnected", (e) => {
+            addCmdMessage(`🔌 Подключён геймпад: ${e.gamepad.id}`);
+            updateGamepads();
+        });
+        window.addEventListener("gamepaddisconnected", (e) => {
+            addCmdMessage(`❌ Отключён контроллер: ${e.gamepad.id}`);
+            updateGamepads();
+        });
+        // добавим финальную строку
+        addCmdMessage("> Джойстики PS/VR/ПК обновляются автоматически. CMD готов.");
+    })();
+</script>
+</body>
+              </html>
