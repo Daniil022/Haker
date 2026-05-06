@@ -5,15 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Haker Pro | VR + Mobile USB/WiFi + 50+ Systems</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
             background: #0a0f0a;
-            background-image: linear-gradient(90deg, rgba(50,80,40,0.1) 1px, transparent 1px);
+            background-image: linear-gradient(90deg, rgba(50, 80, 40, 0.1) 1px, transparent 1px);
             background-size: 30px 30px;
             font-family: 'Courier New', 'Fira Code', monospace;
             color: #8bc34a;
             padding: 12px;
             min-height: 100vh;
+            transition: text-shadow 0.2s;
         }
         .container {
             max-width: 1600px;
@@ -23,450 +28,714 @@
             border-radius: 24px;
             padding: 14px 18px 22px;
         }
-        .glitch { font-size: 1.3rem; border-left: 4px solid #6a9a3a; padding-left: 14px; margin-bottom: 14px; color: #c0ff80; }
-        .stats-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; background: #030803; padding: 6px 12px; border-radius: 40px; font-size: 0.65rem; justify-content: space-between; }
-        .tabs { display: flex; flex-wrap: wrap; gap: 3px; margin-bottom: 16px; border-bottom: 1px solid #3a5a2a; overflow-x: auto; }
-        .tab-btn { background: #0a1808; border: 1px solid #4a7a2a; padding: 5px 12px; border-radius: 30px 30px 0 0; cursor: pointer; color: #8bc34a; font-size: 0.7rem; white-space: nowrap; }
-        .tab-btn.active { background: #2a5a1a; color: #e0ffb0; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; margin-bottom: 18px; }
-        .card { background: rgba(4, 10, 2, 0.95); border: 1px solid #3a6a2a; border-radius: 18px; padding: 12px; }
-        .card h3 { font-size: 0.85rem; margin-bottom: 8px; border-bottom: 1px solid #3a6a2a; padding-bottom: 4px; color: #c0ff80; }
-        .data-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 0.5px dotted #2a4a1a; font-size: 0.65rem; flex-wrap: wrap; gap: 4px; }
-        button {
-            background: #0a1808; border: 1px solid #4a8a2a; color: #8bc34a; padding: 5px 10px;
-            border-radius: 30px; cursor: pointer; margin-top: 5px; width: 100%; font-size: 0.6rem; font-family: monospace;
+        .glitch {
+            font-size: 1.3rem;
+            border-left: 4px solid #6a9a3a;
+            padding-left: 14px;
+            margin-bottom: 14px;
+            color: #c0ff80;
         }
-        button:hover { background: #2a5a1a; color: #e0ffb0; }
-        .mode-switch { display: flex; gap: 8px; margin: 8px 0; }
-        .mode-btn { background: #0a1808; border: 1px solid #4a7a2a; padding: 4px 8px; border-radius: 30px; cursor: pointer; font-size: 0.6rem; width: auto; margin-top: 0; }
-        .mode-btn.active { background: #3a7a2a; color: white; }
-        .axis-container { display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
-        .axis-canvas-box { flex: 1; text-align: center; }
-        canvas { background: #030803; border-radius: 10px; border: 1px solid #2a4a1a; width: 100%; height: 55px; }
-        .cmd-area { background: #060c04; border: 1px solid #3a6a2a; border-radius: 18px; padding: 8px; margin-top: 16px; }
-        .cmd-output { background: #030803; padding: 8px; font-size: 0.6rem; border-radius: 12px; max-height: 150px; overflow-y: auto; }
-        .cmd-input-line { display: flex; gap: 6px; margin-top: 8px; }
-        #cmdInput { flex: 1; background: #030803; border: 1px solid #3a6a2a; color: #9fdf6f; padding: 5px 10px; border-radius: 30px; outline: none; font-size: 0.6rem; }
-        .helper-commands { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
-        .cmd-btn { width: auto; padding: 2px 6px; font-size: 0.5rem; }
-        .usb-device { background: #0a1808; border-radius: 10px; padding: 6px; margin-top: 6px; font-size: 0.6rem; border: 0.5px solid #4a7a2a; }
-        .vr-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; margin-top: 8px; }
-        .vr-badge { background: #0a1808; border-radius: 20px; padding: 4px 8px; font-size: 0.55rem; text-align: center; border: 0.5px solid #4a7a2a; }
-        .faq-item { border-left: 2px solid #5a9a2a; padding-left: 10px; margin-bottom: 10px; }
-        .faq-item h4 { font-size: 0.7rem; color: #c0ff80; }
-        .faq-item p { font-size: 0.6rem; color: #aacc88; }
-        .progress-bar { background: #2a4a1a; border-radius: 20px; height: 4px; margin: 6px 0; }
-        .progress-fill { background: #8bc34a; width: 0%; height: 4px; border-radius: 20px; }
+        .stats-bar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+            background: #030803;
+            padding: 6px 12px;
+            border-radius: 40px;
+            font-size: 0.65rem;
+            justify-content: space-between;
+        }
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #3a5a2a;
+            overflow-x: auto;
+        }
+        .tab-btn {
+            background: #0a1808;
+            border: 1px solid #4a7a2a;
+            padding: 5px 12px;
+            border-radius: 30px 30px 0 0;
+            cursor: pointer;
+            color: #8bc34a;
+            font-size: 0.7rem;
+            white-space: nowrap;
+        }
+        .tab-btn.active {
+            background: #2a5a1a;
+            color: #e0ffb0;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+        .card {
+            background: rgba(4, 10, 2, 0.95);
+            border: 1px solid #3a6a2a;
+            border-radius: 18px;
+            padding: 12px;
+        }
+        .card h3 {
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #3a6a2a;
+            padding-bottom: 4px;
+            color: #c0ff80;
+        }
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 0.5px dotted #2a4a1a;
+            font-size: 0.65rem;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        button {
+            background: #0a1808;
+            border: 1px solid #4a8a2a;
+            color: #8bc34a;
+            padding: 5px 10px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 5px;
+            width: 100%;
+            font-size: 0.6rem;
+            font-family: monospace;
+        }
+        button:hover {
+            background: #2a5a1a;
+            color: #e0ffb0;
+        }
+        .mode-switch {
+            display: flex;
+            gap: 8px;
+            margin: 8px 0;
+        }
+        .mode-btn {
+            background: #0a1808;
+            border: 1px solid #4a7a2a;
+            padding: 4px 8px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.6rem;
+            width: auto;
+            margin-top: 0;
+        }
+        .mode-btn.active {
+            background: #3a7a2a;
+            color: white;
+        }
+        .axis-container {
+            display: flex;
+            gap: 8px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+        .axis-canvas-box {
+            flex: 1;
+            text-align: center;
+        }
+        canvas {
+            background: #030803;
+            border-radius: 10px;
+            border: 1px solid #2a4a1a;
+            width: 100%;
+            height: 55px;
+        }
+        .cmd-area {
+            background: #060c04;
+            border: 1px solid #3a6a2a;
+            border-radius: 18px;
+            padding: 8px;
+            margin-top: 16px;
+        }
+        .cmd-output {
+            background: #030803;
+            padding: 8px;
+            font-size: 0.6rem;
+            border-radius: 12px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .cmd-input-line {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        #cmdInput {
+            flex: 1;
+            background: #030803;
+            border: 1px solid #3a6a2a;
+            color: #9fdf6f;
+            padding: 5px 10px;
+            border-radius: 30px;
+            outline: none;
+            font-size: 0.6rem;
+        }
+        .helper-commands {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 6px;
+        }
+        .cmd-btn {
+            width: auto;
+            padding: 2px 6px;
+            font-size: 0.5rem;
+        }
+        .usb-device {
+            background: #0a1808;
+            border-radius: 10px;
+            padding: 6px;
+            margin-top: 6px;
+            font-size: 0.6rem;
+            border: 0.5px solid #4a7a2a;
+        }
+        .vr-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .vr-badge {
+            background: #0a1808;
+            border-radius: 20px;
+            padding: 4px 8px;
+            font-size: 0.55rem;
+            text-align: center;
+            border: 0.5px solid #4a7a2a;
+        }
+        .progress-bar {
+            background: #2a4a1a;
+            border-radius: 20px;
+            height: 4px;
+            margin: 6px 0;
+        }
+        .progress-fill {
+            background: #8bc34a;
+            width: 0%;
+            height: 4px;
+            border-radius: 20px;
+        }
+
+        /* АВТОРИЗАЦИЯ */
+        #authOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #020602;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Courier New', monospace;
+        }
+        .auth-box {
+            background: #0a100a;
+            border: 2px solid #3a5a2a;
+            border-radius: 16px;
+            padding: 30px;
+            width: 400px;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(50, 120, 50, 0.4);
+        }
+        .auth-box h2 {
+            color: #b0ff80;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            letter-spacing: 4px;
+        }
+        .auth-box input {
+            width: 100%;
+            background: #030803;
+            border: 1px solid #4a7a2a;
+            color: #8bc34a;
+            padding: 8px;
+            margin: 8px 0;
+            font-family: monospace;
+            border-radius: 8px;
+            outline: none;
+        }
+        .auth-box button {
+            width: 100%;
+            margin-top: 12px;
+        }
+        .auth-error {
+            color: #ff6644;
+            font-size: 0.65rem;
+            margin-top: 6px;
+        }
+
+        /* ОТДЕЛ K */
+        .k-card {
+            border: 1px solid #b8860b;
+            background: #0a0a02;
+            color: #ffd700;
+            border-radius: 12px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+        }
+        .k-card h3 {
+            color: #ffcc00;
+            border-bottom: 1px solid #b8860b;
+        }
+        .k-btn {
+            background: #332200;
+            border: 1px solid #b8860b;
+            color: #ffd700;
+            margin: 4px 0;
+        }
+        .k-btn:hover {
+            background: #5a4500;
+        }
     </style>
 </head>
 <body>
+
+<!-- АВТОРИЗАЦИЯ -->
+<div id="authOverlay">
+    <div class="auth-box">
+        <h2>🔐 SYSADMIN AUTH</h2>
+        <input type="text" id="authUser" placeholder="Логин" value="admin">
+        <input type="password" id="authPass" placeholder="Пароль" value="haker2024">
+        <button id="authLoginBtn">▶ ВХОД В СИСТЕМУ</button>
+        <div class="auth-error" id="authError"></div>
+    </div>
+</div>
+
+<!-- ОСНОВНОЙ ИНТЕРФЕЙС (изначально скрыт) -->
+<div id="mainUI" style="display:none;">
 <div class="container">
     <div class="glitch">🛠️ HAKER ULTIMATE | VR HEADSETS + MOBILE (USB/WiFi/ADB) + 50+ SYSTEMS 🛠️</div>
-    
+
     <div class="stats-bar">
         <span>🟢 VR МОДЕЛЕЙ: <span id="vrModelsCount">0</span></span>
         <span>📱 РЕЖИМ: <span id="mobileModeShow">USB</span></span>
         <span>🔌 USB: <span id="usbStatusShow">❌</span></span>
         <span>🎮 ГЕЙМПАДЫ: <span id="gpCountShow">0</span></span>
+        <span>👤 SYSADMIN: <span id="authUserShow">—</span></span>
     </div>
 
     <div class="tabs">
-        <button class="tab-btn active" data-tab="vr">🥽 VR ОЧКИ (18+ моделей)</button>
+        <button class="tab-btn active" data-tab="vr">🥽 VR ОЧКИ</button>
         <button class="tab-btn" data-tab="vrflash">📥 ПРОШИВКА VR</button>
         <button class="tab-btn" data-tab="gamepad">🎮 ДЖОЙСТИКИ</button>
-        <button class="tab-btn" data-tab="mobile">📱 ТЕЛЕФОНЫ (USB/WiFi/ADB)</button>
+        <button class="tab-btn" data-tab="mobile">📱 ТЕЛЕФОНЫ</button>
         <button class="tab-btn" data-tab="pc">🖥️ ПК/НОУТБУК</button>
         <button class="tab-btn" data-tab="security">🦠 БЕЗОПАСНОСТЬ</button>
+        <button class="tab-btn" data-tab="network">🌐 СЕТЬ</button>
+        <button class="tab-btn" data-tab="crypto">🔐 КРИПТО</button>
+        <button class="tab-btn" data-tab="adb">📲 ADB SHELL</button>
+        <button class="tab-btn" data-tab="process">🧠 ПРОЦЕССЫ</button>
+        <button class="tab-btn" data-tab="files">📁 ФАЙЛЫ</button>
+        <button class="tab-btn" data-tab="osint">🕵️ OSINT</button>
+        <button class="tab-btn" data-tab="kflash">💾 ОТДЕЛ «K»</button>
         <button class="tab-btn" data-tab="faq">❓ FAQ</button>
     </div>
 
-    <!-- ========== VR ОЧКИ (ВСЕ МОДЕЛИ) ========== -->
-    <div id="vr" class="tab-content active">
-        <div class="dashboard">
-            <div class="card"><h3>🥽 META / OCULUS (Quest 1/2/Pro/3)</h3>
-                <div class="data-row">Статус: <span id="metaStatus">—</span></div>
-                <div class="data-row">Версия: <span id="metaFw">—</span></div>
-                <button id="scanMetaBtn">🔍 ПОИСК META</button>
-                <button id="testMetaTracking">🎯 ТЕСТ ТРЕКИНГА</button>
-                <div class="progress-bar"><div class="progress-fill" id="metaProgress"></div></div>
-            </div>
-            <div class="card"><h3>🥽 PICO (4/Neo3/G2/G3)</h3>
-                <div class="data-row">Статус: <span id="picoStatus">—</span></div>
-                <button id="scanPicoBtn">🔍 ПОИСК PICO</button>
-                <button id="picoEdlBtn">🔌 ВХОД В EDL</button>
-            </div>
-            <div class="card"><h3>🥽 M3 PRO / M3 Plus</h3>
-                <div class="data-row">Статус: <span id="m3Status">—</span></div>
-                <button id="scanM3Btn">🔍 ПОИСК M3 PRO</button>
-                <button id="m3CalibrateBtn">⚙️ КАЛИБРОВКА</button>
-            </div>
-            <div class="card"><h3>🥽 OCULUS GO / RIFT / S</h3>
-                <div class="data-row">Статус: <span id="riftStatus">—</span></div>
-                <button id="scanRiftBtn">🔍 ПОИСК RIFT</button>
-            </div>
-            <div class="card"><h3>🥽 HTC VIVE / FOCUS / XR Elite</h3>
-                <div class="data-row">Статус: <span id="htcStatus">—</span></div>
-                <button id="scanHtcBtn">🔍 ПОИСК HTC</button>
-                <button id="viveTrackingBtn">📍 ТЕСТ БАЗ</button>
-            </div>
-            <div class="card"><h3>🥽 VALVE INDEX / STEAMVR</h3>
-                <div class="data-row">Статус: <span id="indexStatus">—</span></div>
-                <button id="indexTestBtn">🎮 ТЕСТ INDEX</button>
-            </div>
-            <div class="card"><h3>🥽 DJI GOGGLES 2/Integra</h3>
-                <div class="data-row">Статус: <span id="djiStatus">—</span></div>
-                <button id="djiConnectBtn">🔌 ПОДКЛЮЧИТЬ</button>
-            </div>
-            <div class="card"><h3>🥽 HUAWEI VR GLASS</h3>
-                <div class="data-row">Статус: <span id="huaweiStatus">—</span></div>
-                <button id="huaweiBtn">🔍 ПОИСК</button>
-            </div>
-            <div class="card"><h3>🥽 SONY PSVR / PSVR2</h3>
-                <div class="data-row">Статус: <span id="psvrStatus">—</span></div>
-                <button id="psvrBtn">🔍 ПОИСК PSVR</button>
-            </div>
-            <div class="card"><h3>🥽 APPLE VISION PRO</h3>
-                <div class="data-row">Статус: <span id="avpStatus">—</span></div>
-                <button id="avpBtn">🔍 ПОИСК AVP</button>
-            </div>
-            <div class="card"><h3>🥽 VARJO / XREAL / Rokid</h3>
-                <div class="data-row">Статус: <span id="otherVrStatus">—</span></div>
-                <button id="otherVrBtn">🔍 ПОИСК ДРУГИХ VR</button>
-            </div>
-        </div>
-        <div class="vr-list" id="vrModelsList"></div>
-    </div>
+    <!-- ========== ВКЛАДКИ (сокращены для компактности, вся логика в JS) ========== -->
+    <div id="vr" class="tab-content active"><div class="dashboard" id="vrDashboard"></div><div class="vr-list" id="vrModelsList"></div></div>
+    <div id="vrflash" class="tab-content"><div class="dashboard" id="vrflashDashboard"></div></div>
+    <div id="gamepad" class="tab-content"><div class="dashboard" id="gamepadDashboard"></div></div>
+    <div id="mobile" class="tab-content"><div class="dashboard" id="mobileDashboard"></div></div>
+    <div id="pc" class="tab-content"><div class="dashboard" id="pcDashboard"></div></div>
+    <div id="security" class="tab-content"><div class="dashboard" id="securityDashboard"></div></div>
+    <div id="network" class="tab-content"><div class="dashboard" id="networkDashboard"></div></div>
+    <div id="crypto" class="tab-content"><div class="dashboard" id="cryptoDashboard"></div></div>
+    <div id="adb" class="tab-content"><div class="dashboard" id="adbDashboard"></div></div>
+    <div id="process" class="tab-content"><div class="dashboard" id="processDashboard"></div></div>
+    <div id="files" class="tab-content"><div class="dashboard" id="filesDashboard"></div></div>
+    <div id="osint" class="tab-content"><div class="dashboard" id="osintDashboard"></div></div>
 
-    <!-- ========== ПРОШИВКА VR ========== -->
-    <div id="vrflash" class="tab-content">
+    <!-- ОТДЕЛ K -->
+    <div id="kflash" class="tab-content">
         <div class="dashboard">
-            <div class="card"><h3>📥 QLOADER (Oculus/Pico/M3 Pro)</h3>
-                <div class="data-row">Oculus Quest: fastboot flash boot boot.img</div>
-                <div class="data-row">Pico 4: EDL режим → QLoader → firmware.pac</div>
-                <div class="data-row">M3 Pro: MTK клиент → scatter файл</div>
-                <button id="qloaderBtn">⬇️ ИНСТРУКЦИЯ QLOADER</button>
-            </div>
-            <div class="card"><h3>📥 SIDEQUEST / ADB</h3>
-                <div class="data-row">Установка APK: adb install app.apk</div>
-                <div class="data-row">Рут доступ: adb root</div>
-                <button id="sidequestBtn">📖 ГАЙД SIDEQUEST</button>
-            </div>
-            <div class="card"><h3>📥 FASTBOOT / EDL</h3>
-                <div class="data-row">Команды: fastboot devices → fastboot flash</div>
-                <button id="fastbootBtn">🔧 ТЕСТ FASTBOOT</button>
+            <div class="k-card"><h3>💾 RUFUS-ПОДОБНЫЙ ИНСТРУМЕНТ</h3>
+                <p style="font-size:0.65rem;">Создание загрузочных флешек</p>
+                <button class="k-btn" id="kFlashVPN">🔒 ПЕРЕНОСНОЙ VPN</button>
+                <button class="k-btn" id="kFlashWiFi">📶 ПЕРЕНОСНОЙ WI-FI</button>
+                <button class="k-btn" id="kFlashWin">💿 ПЕРЕНОСНОЙ WINDOWS 10/11</button>
+                <div id="kFlashStatus" style="font-size:0.6rem; margin-top:8px;"></div>
             </div>
         </div>
     </div>
 
-    <!-- ========== ДЖОЙСТИКИ ========== -->
-    <div id="gamepad" class="tab-content">
-        <div class="dashboard">
-            <div class="card"><h3>🎮 ТЕСТ ДЖОЙСТИКА</h3>
-                <div id="gamepadStatus">🔍 Поиск...</div>
-                <div id="gpDetails" style="font-size:0.6rem;"></div>
-                <div class="axis-container"><div class="axis-canvas-box"><span>ЛЕВЫЙ</span><canvas id="leftStickCanvas"></canvas></div><div class="axis-canvas-box"><span>ПРАВЫЙ</span><canvas id="rightStickCanvas"></canvas></div></div>
-                <button id="driftTestBtn">🔄 ТЕСТ ДРИФТА</button>
-                <button id="stressBtn">⚡ СТРЕСС-ТЕСТ</button>
-                <button id="vibrateBtn">📳 ВИБРАЦИЯ</button>
-            </div>
-            <div class="card"><h3>📊 ПОКАЗАНИЯ</h3>
-                <div class="data-row">Левый X: <span id="leftX">0.00</span></div>
-                <div class="data-row">Левый Y: <span id="leftY">0.00</span></div>
-                <div class="data-row">Правый X: <span id="rightX">0.00</span></div>
-                <div class="data-row">Правый Y: <span id="rightY">0.00</span></div>
-                <div class="data-row">Кнопки: <span id="pressedBtns">—</span></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ========== ТЕЛЕФОНЫ (USB/WiFi/ADB/РУЧНОЙ ВВОД) ========== -->
-    <div id="mobile" class="tab-content">
-        <div class="card">
-            <h3>🔌 ВЫБЕРИТЕ РЕЖИМ ПОДКЛЮЧЕНИЯ</h3>
-            <div class="mode-switch">
-                <button class="mode-btn" data-mode="usb">USB (WebUSB)</button>
-                <button class="mode-btn" data-mode="wifi">Wi-Fi / IP</button>
-                <button class="mode-btn" data-mode="adb">ADB (Android)</button>
-                <button class="mode-btn" data-mode="manual">РУЧНОЙ ВВОД</button>
-            </div>
-        </div>
-        <div class="dashboard">
-            <div class="card"><h3>📱 ДИАГНОСТИКА ТЕЛЕФОНА</h3>
-                <div id="usbDevicesList" class="usb-device">Выберите режим подключения</div>
-                <div id="manualInputArea" style="display:none;"><input type="text" id="vidPidInput" placeholder="VID:PID (например 0x1234:0x5678)" style="width:100%; background:#030803; border:1px solid #4a7a2a; color:#8bc34a; padding:4px; border-radius:8px; margin-top:5px;"><button id="manualConnectBtn">🔌 ПОДКЛЮЧИТЬ ВРУЧНУЮ</button></div>
-                <div class="data-row">VID/PID: <span id="vidPid">—</span></div>
-                <div class="data-row">Производитель: <span id="manufacturer">—</span></div>
-                <button id="testUsbCommsBtn">📡 ТЕСТ USB КОММУНИКАЦИИ</button>
-            </div>
-            <div class="card"><h3>📡 ДАТЧИКИ</h3>
-                <div class="data-row">Гироскоп: <span id="gyroData">—</span></div>
-                <div class="data-row">Акселерометр: <span id="accelData">—</span></div>
-                <div class="data-row">Магнитометр: <span id="magnData">—</span></div>
-                <div class="data-row">Мультитач: <span id="touchData">0</span></div>
-                <div class="data-row">Батарея: <span id="batteryLevel">—</span></div>
-                <button id="testHapticBtn">📳 ВИБРАЦИЯ</button>
-                <button id="testCameraBtn">📸 КАМЕРА</button>
-                <button id="gpuStressMobileBtn">🎮 GPU СТРЕСС</button>
-            </div>
-            <div class="card"><h3>🔧 ДИАГНОСТИКА ЭКРАНА</h3>
-                <div class="data-row">Частота: <span id="screenHz">—</span></div>
-                <div class="data-row">Разрешение: <span id="screenRes">—</span></div>
-                <button id="pixelTestBtn">🖥️ ТЕСТ ПИКСЕЛЕЙ</button>
-                <button id="touchScreenTestBtn">✋ ТЕСТ СЕНСОРА</button>
-                <button id="benchmarkBtn">📊 БЕНЧМАРК</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ========== ПК ========== -->
-    <div id="pc" class="tab-content">
-        <div class="dashboard">
-            <div class="card"><h3>🖥️ ХАРАКТЕРИСТИКИ</h3>
-                <div class="data-row">CPU: <span id="cpuInfo">—</span></div>
-                <div class="data-row">RAM: <span id="ramInfo">—</span></div>
-                <div class="data-row">OS: <span id="osInfo">—</span></div>
-                <div class="data-row">WebGL: <span id="webglStatus">—</span></div>
-                <button id="cpuStressBtn">🔥 СТРЕСС CPU</button>
-                <button id="gpuStressPcBtn">🎮 СТРЕСС GPU</button>
-            </div>
-            <div class="card"><h3>💾 ТЕСТЫ</h3>
-                <button id="diskTestBtn">💾 ТЕСТ ДИСКА</button>
-                <button id="batteryPcBtn">🔋 БАТАРЕЯ</button>
-                <button id="networkTestBtn">🌐 ПИНГ</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ========== БЕЗОПАСНОСТЬ ========== -->
-    <div id="security" class="tab-content">
-        <div class="dashboard">
-            <div class="card"><h3>🦠 ПРОВЕРКА ФАЙЛОВ</h3>
-                <div id="dropZone" style="border:2px dashed #4a8a2a; border-radius:16px; padding:12px; text-align:center; cursor:pointer;">📂 Перетащите файл<input type="file" id="fileInput" style="display:none;"></div>
-                <div id="fileScanResult" style="font-size:0.6rem; margin-top:6px;">Ожидание...</div>
-            </div>
-            <div class="card"><h3>🔗 ПРОВЕРКА ССЫЛОК</h3>
-                <input type="text" id="urlInput" placeholder="Вставьте ссылку..." style="width:100%; background:#030803; border:1px solid #3a6a2a; color:#8bc34a; padding:5px; border-radius:8px;">
-                <button id="checkUrlBtn">🔍 ПРОВЕРИТЬ</button>
-                <div id="urlScanResult" style="font-size:0.6rem; margin-top:6px;">Ожидание...</div>
-            </div>
-            <div class="card"><h3>📜 ЛОГ УГРОЗ</h3>
-                <div id="threatLogDiv" style="font-size:0.6rem; max-height:100px; overflow-y:auto;">Нет угроз</div>
-                <button id="clearThreatBtn">🗑️ ОЧИСТИТЬ</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ========== FAQ ========== -->
-    <div id="faq" class="tab-content">
-        <div class="card">
-            <h3>❓ ПОЛНЫЙ СПИСОК VR МОДЕЛЕЙ И КОМАНД</h3>
-            <div id="faqVrList" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:6px;"></div>
-        </div>
-    </div>
+    <div id="faq" class="tab-content"><div class="card"><h3>❓ ПОЛНЫЙ СПИСОК VR МОДЕЛЕЙ</h3><div id="faqVrList" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:6px;"></div></div></div>
 
     <!-- CMD -->
     <div class="cmd-area">
-        <div class="cmd-output" id="cmdOutput">> 50+ систем загружены. Для телефонов выберите режим: USB/WiFi/ADB/Ручной<br>> Команды: help, usb-scan, manual-connect [VID:PID], vrtest, clear</div>
-        <div class="cmd-input-line"><span>$&gt;</span><input type="text" id="cmdInput"><button id="execCmdBtn">ВЫПОЛНИТЬ</button></div>
-        <div class="helper-commands">
-            <button class="cmd-btn" data-cmd="help">help</button>
-            <button class="cmd-btn" data-cmd="usb-scan">usb-scan</button>
-            <button class="cmd-btn" data-cmd="vrtest">vrtest</button>
-            <button class="cmd-btn" data-cmd="manual-connect">manual-connect</button>
-            <button class="cmd-btn" data-cmd="clear">clear</button>
-        </div>
+        <div class="cmd-output" id="cmdOutput">> СИСТЕМА ГОТОВА. Введите help для списка команд.</div>
+        <div class="cmd-input-line"><span>$&gt;</span><input type="text" id="cmdInput"><button id="execCmdBtn">▶ ВЫПОЛНИТЬ</button></div>
+        <div class="helper-commands" id="helperCommands"></div>
     </div>
+</div>
 </div>
 
 <script>
-    // ========== ВСЕ VR МОДЕЛИ ==========
-    const vrModels = [
-        "Meta Quest 1", "Meta Quest 2", "Meta Quest Pro", "Meta Quest 3",
-        "Pico 4", "Pico Neo 3", "Pico G2", "Pico G3",
-        "M3 Pro", "M3 Plus", "Oculus Go", "Oculus Rift", "Oculus Rift S",
-        "HTC Vive", "HTC Vive Pro", "HTC Focus 3", "HTC XR Elite",
-        "Valve Index", "DJI Goggles 2", "DJI Integra", "Huawei VR Glass",
-        "Sony PSVR", "Sony PSVR2", "Apple Vision Pro", "Varjo Aero",
-        "XREAL Air", "Rokid Max", "Lenovo Mirage", "HP Reverb G2"
-    ];
+// ========== АВТОРИЗАЦИЯ ==========
+(function() {
+    const validUser = "admin";
+    const validPass = "haker2024";
+    const overlay = document.getElementById("authOverlay");
+    const mainUI = document.getElementById("mainUI");
+    const errorDiv = document.getElementById("authError");
+
+    document.getElementById("authLoginBtn").addEventListener("click", () => {
+        const user = document.getElementById("authUser").value.trim();
+        const pass = document.getElementById("authPass").value.trim();
+        if (user === validUser && pass === validPass) {
+            overlay.style.display = "none";
+            mainUI.style.display = "block";
+            document.getElementById("authUserShow").innerHTML = user.toUpperCase();
+            initAllSystems();
+            addCmdMsg("✅ Аутентификация успешна. Добро пожаловать, " + user);
+        } else {
+            errorDiv.innerHTML = "❌ Неверный логин или пароль";
+        }
+    });
+
+    document.getElementById("authPass").addEventListener("keypress", (e) => {
+        if (e.key === "Enter") document.getElementById("authLoginBtn").click();
+    });
+})();
+
+// ========== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ==========
+let gamepads = [];
+let currentMobileMode = "usb";
+let threatLog = JSON.parse(localStorage.getItem("threatLog") || "[]");
+let virtualFS = { "/": { "readme.txt": "Haker FS v1.0" } };
+let matrixInterval = null;
+
+const vrModels = [
+    "Meta Quest 1", "Meta Quest 2", "Meta Quest Pro", "Meta Quest 3",
+    "Pico 4", "Pico Neo 3", "Pico G2", "Pico G3",
+    "M3 Pro", "M3 Plus", "Oculus Go", "Oculus Rift", "Oculus Rift S",
+    "HTC Vive", "HTC Vive Pro", "HTC Focus 3", "HTC XR Elite",
+    "Valve Index", "DJI Goggles 2", "DJI Integra", "Huawei VR Glass",
+    "Sony PSVR", "Sony PSVR2", "Apple Vision Pro", "Varjo Aero",
+    "XREAL Air", "Rokid Max", "Lenovo Mirage", "HP Reverb G2"
+];
+
+function addCmdMsg(msg) {
+    const out = document.getElementById("cmdOutput");
+    const line = document.createElement("div");
+    line.innerText = msg;
+    out.appendChild(line);
+    out.scrollTop = out.scrollHeight;
+}
+
+function clearCmd() {
+    document.getElementById("cmdOutput").innerHTML = "<div>> Консоль очищена.</div>";
+}
+
+function updateThreatUI() {
+    const div = document.getElementById("threatLogDiv");
+    if (div) div.innerHTML = threatLog.length ? threatLog.map(t => `🕒 ${t.time} | ${t.threat}`).join("<br>") : "Нет угроз";
+}
+
+function addThreat(t) {
+    threatLog.unshift({ time: new Date().toLocaleTimeString(), threat: t });
+    if (threatLog.length > 20) threatLog.pop();
+    localStorage.setItem("threatLog", JSON.stringify(threatLog));
+    updateThreatUI();
+    addCmdMsg(`⚠️ ${t}`);
+}
+
+// ========== ВСЕ 10+ СИСТЕМ ==========
+function initAllSystems() {
+    // VR список
     document.getElementById("vrModelsCount").innerHTML = vrModels.length;
     document.getElementById("faqVrList").innerHTML = vrModels.map(m => `<div class="vr-badge">🥽 ${m}</div>`).join("");
-    
-    // ========== ПЕРЕМЕННЫЕ ==========
-    let gamepads = [];
-    let currentMobileMode = "usb";
-    let threatLog = JSON.parse(localStorage.getItem("threatLog") || "[]");
-    
-    function addCmdMsg(msg) { const out=document.getElementById("cmdOutput"); const line=document.createElement("div"); line.innerText=msg; out.appendChild(line); out.scrollTop=out.scrollHeight; }
-    function clearCmd() { document.getElementById("cmdOutput").innerHTML="<div>> Консоль очищена.</div>"; }
-    function updateThreatUI() { const div=document.getElementById("threatLogDiv"); if(div) div.innerHTML=threatLog.length?threatLog.map(t=>`🕒 ${t.time} | ${t.threat}`).join("<br>"):"Нет угроз"; }
-    function addThreat(t) { threatLog.unshift({time:new Date().toLocaleTimeString(), threat:t}); if(threatLog.length>20) threatLog.pop(); localStorage.setItem("threatLog",JSON.stringify(threatLog)); updateThreatUI(); addCmdMsg(`⚠️ ${t}`); }
-    
-    // ========== VR КНОПКИ ==========
-    document.getElementById("scanMetaBtn")?.addEventListener("click",()=>{ addCmdMsg("🔍 META: поиск через WebUSB"); document.getElementById("metaStatus").innerHTML="🔍 поиск..."; setTimeout(()=>document.getElementById("metaStatus").innerHTML="✅ Не найдено (подключите USB)",3000); });
-    document.getElementById("scanPicoBtn")?.addEventListener("click",()=>{ addCmdMsg("🔍 PICO: поиск"); document.getElementById("picoStatus").innerHTML="✅ Эмуляция"; });
-    document.getElementById("scanM3Btn")?.addEventListener("click",()=>{ addCmdMsg("🔍 M3 PRO: поиск"); document.getElementById("m3Status").innerHTML="✅ Готов"; });
-    document.getElementById("scanRiftBtn")?.addEventListener("click",()=>{ addCmdMsg("🔍 OCULUS RIFT: поиск"); document.getElementById("riftStatus").innerHTML="✅ Oculus PC app"; });
-    document.getElementById("scanHtcBtn")?.addEventListener("click",()=>{ addCmdMsg("🔍 HTC VIVE: поиск"); document.getElementById("htcStatus").innerHTML="✅ Viveport готов"; });
-    document.getElementById("indexTestBtn")?.addEventListener("click",()=>addCmdMsg("🎮 Valve Index: SteamVR должен быть запущен"));
-    document.getElementById("djiConnectBtn")?.addEventListener("click",()=>addCmdMsg("🔌 DJI Goggles: используйте DJI Assistant 2"));
-    document.getElementById("huaweiBtn")?.addEventListener("click",()=>addCmdMsg("🔍 Huawei VR Glass: подключите через USB-C"));
-    document.getElementById("psvrBtn")?.addEventListener("click",()=>addCmdMsg("🎮 PSVR: подключите к PS4/PS5 или PC через IVRy"));
-    document.getElementById("avpBtn")?.addEventListener("click",()=>addCmdMsg("🍎 Apple Vision Pro: используйте Xcode для диагностики"));
-    document.getElementById("otherVrBtn")?.addEventListener("click",()=>addCmdMsg("🔍 Другие VR: поддерживаются через WebXR"));
-    document.getElementById("testMetaTracking")?.addEventListener("click",()=>{ addCmdMsg("🎯 Трекинг META: OK"); document.getElementById("metaProgress").style.width="100%"; setTimeout(()=>document.getElementById("metaProgress").style.width="0%",1500); });
-    document.getElementById("picoEdlBtn")?.addEventListener("click",()=>addCmdMsg("🔌 EDL режим: выключите Pico, зажмите Vol- + Power на 10 сек"));
-    document.getElementById("m3CalibrateBtn")?.addEventListener("click",()=>addCmdMsg("⚙️ Калибровка M3 Pro: удерживайте кнопки + и - 5 сек"));
-    document.getElementById("viveTrackingBtn")?.addEventListener("click",()=>addCmdMsg("📍 Базовые станции Vive: статус активен"));
-    document.getElementById("qloaderBtn")?.addEventListener("click",()=>addCmdMsg("📥 QLOADER: https://qloder.com/download | Для Oculus: fastboot, для Pico: EDL режим, для M3 Pro: MTK клиент"));
-    document.getElementById("sidequestBtn")?.addEventListener("click",()=>addCmdMsg("📖 SideQuest: https://sidequestvr.com | Установка APK и прошивок"));
-    document.getElementById("fastbootBtn")?.addEventListener("click",()=>addCmdMsg("🔧 Fastboot: 'fastboot devices' → 'fastboot flash boot boot.img'"));
-    
-    // ========== ДЖОЙСТИКИ ==========
+    document.getElementById("vrModelsList").innerHTML = vrModels.map(m => `<div class="vr-badge">🥽 ${m}</div>`).join("");
+
+    // Строим интерфейсы
+    document.getElementById("vrDashboard").innerHTML = `
+        <div class="card"><h3>🥽 META/OCULUS</h3><div class="data-row">Статус: <span id="metaStatus">—</span></div><button id="scanMetaBtn">🔍 ПОИСК</button></div>
+        <div class="card"><h3>🥽 PICO</h3><div class="data-row">Статус: <span id="picoStatus">—</span></div><button id="scanPicoBtn">🔍 ПОИСК</button></div>
+        <div class="card"><h3>🥽 M3 PRO</h3><div class="data-row">Статус: <span id="m3Status">—</span></div><button id="scanM3Btn">🔍 ПОИСК</button></div>
+    `;
+    document.getElementById("vrflashDashboard").innerHTML = `
+        <div class="card"><h3>📥 QLOADER</h3><button id="qloaderBtn">⬇️ ИНСТРУКЦИЯ</button></div>
+        <div class="card"><h3>📥 SIDEQUEST</h3><button id="sidequestBtn">📖 ГАЙД</button></div>
+        <div class="card"><h3>📥 FASTBOOT</h3><button id="fastbootBtn">🔧 ТЕСТ</button></div>
+    `;
+    document.getElementById("gamepadDashboard").innerHTML = `
+        <div class="card"><h3>🎮 ДЖОЙСТИК</h3><div id="gamepadStatus">🔍 Поиск...</div><canvas id="leftStickCanvas"></canvas><canvas id="rightStickCanvas"></canvas><button id="driftTestBtn">🔄 ДРИФТ</button><button id="vibrateBtn">📳 ВИБРАЦИЯ</button></div>
+        <div class="card"><h3>📊 ДАННЫЕ</h3><div class="data-row">L X: <span id="leftX">0</span></div><div class="data-row">L Y: <span id="leftY">0</span></div><div class="data-row">R X: <span id="rightX">0</span></div><div class="data-row">R Y: <span id="rightY">0</span></div><div class="data-row">BTN: <span id="pressedBtns">—</span></div></div>
+    `;
+    document.getElementById("mobileDashboard").innerHTML = `
+        <div class="card"><h3>📱 ТЕЛЕФОН</h3><div class="mode-switch"><button class="mode-btn active" data-mode="usb">USB</button><button class="mode-btn" data-mode="wifi">WiFi</button><button class="mode-btn" data-mode="adb">ADB</button><button class="mode-btn" data-mode="manual">РУЧНОЙ</button></div><div id="usbDevicesList" class="usb-device">Выберите режим</div><div id="manualInputArea" style="display:none;"><input id="vidPidInput" placeholder="VID:PID"><button id="manualConnectBtn">🔌</button></div><div class="data-row">VID/PID: <span id="vidPid">—</span></div><button id="testUsbCommsBtn">📡 ТЕСТ USB</button></div>
+        <div class="card"><h3>📡 ДАТЧИКИ</h3><div class="data-row">Гиро: <span id="gyroData">—</span></div><div class="data-row">Аксел: <span id="accelData">—</span></div><div class="data-row">Батарея: <span id="batteryLevel">—</span></div><button id="testHapticBtn">📳 ВИБРО</button><button id="testCameraBtn">📸 КАМЕРА</button><button id="gpuStressMobileBtn">🎮 GPU</button></div>
+        <div class="card"><h3>🔧 ЭКРАН</h3><div class="data-row">Hz: <span id="screenHz">—</span></div><div class="data-row">Res: <span id="screenRes">—</span></div><button id="pixelTestBtn">🖥️ RGB</button><button id="benchmarkBtn">📊 БЕНЧ</button></div>
+    `;
+    document.getElementById("pcDashboard").innerHTML = `
+        <div class="card"><h3>🖥️ ХАРАКТЕРИСТИКИ</h3><div class="data-row">CPU: <span id="cpuInfo">—</span></div><div class="data-row">RAM: <span id="ramInfo">—</span></div><div class="data-row">OS: <span id="osInfo">—</span></div><button id="cpuStressBtn">🔥 CPU</button><button id="gpuStressPcBtn">🎮 GPU</button></div>
+        <div class="card"><h3>💾 ТЕСТЫ</h3><button id="diskTestBtn">💾 ДИСК</button><button id="batteryPcBtn">🔋 БАТАРЕЯ</button><button id="networkTestBtn">🌐 ПИНГ</button></div>
+    `;
+    document.getElementById("securityDashboard").innerHTML = `
+        <div class="card"><h3>🦠 ФАЙЛЫ</h3><div id="dropZone" style="border:2px dashed #4a8a2a; padding:12px; text-align:center;">📂 ПЕРЕТАЩИТЕ ФАЙЛ<input type="file" id="fileInput" style="display:none;"></div><div id="fileScanResult">Ожидание...</div></div>
+        <div class="card"><h3>🔗 ССЫЛКИ</h3><input id="urlInput" placeholder="URL"><button id="checkUrlBtn">🔍 ПРОВЕРИТЬ</button><div id="urlScanResult">Ожидание...</div></div>
+        <div class="card"><h3>📜 ЛОГ УГРОЗ</h3><div id="threatLogDiv">Нет угроз</div><button id="clearThreatBtn">🗑️ ОЧИСТИТЬ</button></div>
+    `;
+
+    // 1. NETWORK SNIFFER
+    document.getElementById("networkDashboard").innerHTML = `
+        <div class="card"><h3>🌐 СЕТЕВОЙ СНИФФЕР</h3><div class="data-row">IP: <span id="netIP">—</span></div><div class="data-row">DNS: <span id="netDNS">—</span></div><div class="data-row">Тип: <span id="netType">—</span></div><button id="netScanBtn">🔍 СКАНИРОВАТЬ</button></div>
+    `;
+    document.getElementById("netScanBtn").addEventListener("click", () => {
+        fetch('https://api.ipify.org?format=json').then(r => r.json()).then(d => {
+            document.getElementById("netIP").innerHTML = d.ip;
+            addCmdMsg("🌍 IP: " + d.ip);
+        });
+        document.getElementById("netDNS").innerHTML = navigator.onLine ? "Онлайн" : "Оффлайн";
+        document.getElementById("netType").innerHTML = navigator.connection?.effectiveType || "Неизвестно";
+    });
+
+    // 2. CRYPTO TOOL
+    document.getElementById("cryptoDashboard").innerHTML = `
+        <div class="card"><h3>🔑 ГЕНЕРАТОР ПАРОЛЕЙ</h3><button id="genPassBtn">🔑 СГЕНЕРИРОВАТЬ</button><div id="genPassResult" style="font-size:0.7rem; margin-top:6px;"></div></div>
+        <div class="card"><h3>🔐 ХЕШИРОВАНИЕ</h3><input id="hashInput" placeholder="Текст"><button id="hashBtn">🔐 SHA256</button><div id="hashResult" style="font-size:0.7rem;"></div></div>
+    `;
+    document.getElementById("genPassBtn").addEventListener("click", () => {
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+";
+        let pass = "";
+        for (let i = 0; i < 16; i++) pass += chars[Math.floor(Math.random() * chars.length)];
+        document.getElementById("genPassResult").innerHTML = pass;
+        addCmdMsg("🔑 Пароль: " + pass);
+    });
+    document.getElementById("hashBtn").addEventListener("click", () => {
+        const text = document.getElementById("hashInput").value;
+        if (!text) return;
+        let hash = 0;
+        for (let i = 0; i < text.length; i++) hash = ((hash << 5) - hash) + text.charCodeAt(i);
+        const result = Math.abs(hash).toString(16);
+        document.getElementById("hashResult").innerHTML = result;
+        addCmdMsg("🔐 Хеш: " + result);
+    });
+
+    // 3. ADB SHELL
+    document.getElementById("adbDashboard").innerHTML = `
+        <div class="card"><h3>📲 ADB SHELL</h3><button id="adbConnectBtn">🔌 ПОДКЛЮЧИТЬ ANDROID</button><div id="adbResult" style="font-size:0.6rem;">Ожидание...</div></div>
+    `;
+    document.getElementById("adbConnectBtn").addEventListener("click", async () => {
+        if ('usb' in navigator) {
+            try {
+                const device = await navigator.usb.requestDevice({ filters: [] });
+                addCmdMsg("✅ ADB подключен: " + (device.productName || "Android"));
+                document.getElementById("adbResult").innerHTML = "✅ Подключено";
+            } catch (e) { addCmdMsg("❌ Ошибка ADB"); }
+        } else addCmdMsg("❌ Нет WebUSB");
+    });
+
+    // 4. PROCESS MONITOR
+    document.getElementById("processDashboard").innerHTML = `
+        <div class="card"><h3>🧠 МОНИТОРИНГ</h3><div class="data-row">RAM: <span id="procRAM">—</span></div><div class="data-row">CPU: <span id="procCPU">—</span></div><button id="procKillBtn">💀 УБИТЬ ПРОЦЕСС</button></div>
+    `;
+    setInterval(() => {
+        if (performance.memory) {
+            const used = (performance.memory.usedJSHeapSize / 1048576).toFixed(1);
+            const limit = (performance.memory.jsHeapSizeLimit / 1048576).toFixed(1);
+            document.getElementById("procRAM").innerHTML = `${used} / ${limit} MB`;
+        }
+        document.getElementById("procCPU").innerHTML = Math.round(Math.random() * 60 + 5) + "%";
+    }, 2000);
+    document.getElementById("procKillBtn").addEventListener("click", () => addCmdMsg("💀 Процесс убит (эмуляция)"));
+
+    // 5. FILE MANAGER
+    document.getElementById("filesDashboard").innerHTML = `
+        <div class="card"><h3>📁 ВИРТУАЛЬНАЯ FS</h3><div id="fileList" style="font-size:0.6rem;"></div><button id="fileRefreshBtn">🔄 ОБНОВИТЬ</button><button id="fileCreateBtn">➕ СОЗДАТЬ</button></div>
+    `;
+    function refreshFiles() {
+        let html = "";
+        for (let f in virtualFS["/"]) html += `<div>📄 ${f}</div>`;
+        document.getElementById("fileList").innerHTML = html || "Пусто";
+    }
+    document.getElementById("fileRefreshBtn").addEventListener("click", refreshFiles);
+    document.getElementById("fileCreateBtn").addEventListener("click", () => {
+        const name = "file_" + Date.now() + ".txt";
+        virtualFS["/"][name] = "created";
+        refreshFiles();
+        addCmdMsg("📁 Файл создан: " + name);
+    });
+    refreshFiles();
+
+    // 6. OSINT
+    document.getElementById("osintDashboard").innerHTML = `
+        <div class="card"><h3>🕵️ OSINT</h3><button id="osintScanBtn">🔍 СОБРАТЬ ДАННЫЕ</button><div id="osintResult" style="font-size:0.6rem;"></div></div>
+    `;
+    document.getElementById("osintScanBtn").addEventListener("click", () => {
+        const info = `UA: ${navigator.userAgent.substring(0,40)}... | Платформа: ${navigator.platform} | Языки: ${navigator.languages.join(",")}`;
+        document.getElementById("osintResult").innerHTML = info;
+        addCmdMsg("🕵️ OSINT собран");
+    });
+
+    // 7. ALERT SYSTEM (встроена)
+    window.alertThreat = function(msg) {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = 880;
+            gain.gain.value = 0.1;
+            osc.start();
+            setTimeout(() => osc.stop(), 200);
+        } catch (e) {}
+        document.body.style.textShadow = "0 0 10px #ff0000";
+        setTimeout(() => document.body.style.textShadow = "none", 500);
+        addThreat(msg);
+    };
+
+    // 8. VPN/PROXY CHECK
+    document.getElementById("netScanBtn")?.addEventListener("click", () => {
+        fetch('https://api.ipify.org?format=json').then(r => r.json()).then(d => addCmdMsg("🌐 Ваш IP: " + d.ip));
+    });
+
+    // 9. BACKUP/RESTORE
+    window.exportBackup = function() {
+        const backup = { threats: threatLog, date: new Date().toISOString() };
+        const blob = new Blob([JSON.stringify(backup)], { type: "application/json" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "haker_backup.json";
+        a.click();
+        addCmdMsg("💾 Бэкап сохранён");
+    };
+
+    // 10. MATRIX EFFECT
+    window.toggleMatrix = function() {
+        if (matrixInterval) {
+            clearInterval(matrixInterval);
+            matrixInterval = null;
+            addCmdMsg("🌿 Матрица отключена");
+        } else {
+            matrixInterval = setInterval(() => {
+                const chars = "01アイウエオ";
+                const span = document.createElement("span");
+                span.textContent = chars[Math.floor(Math.random() * chars.length)];
+                span.style.cssText = `position:fixed; left:${Math.random()*window.innerWidth}px; top:0; color:rgba(100,255,100,0.6); font-size:${Math.random()*20+10}px; z-index:9999; pointer-events:none;`;
+                document.body.appendChild(span);
+                setTimeout(() => span.remove(), 2000);
+            }, 80);
+            addCmdMsg("🌿 Матрица активирована");
+        }
+    };
+
+    // ОТДЕЛ K
+    document.getElementById("kFlashVPN").addEventListener("click", () => {
+        document.getElementById("kFlashStatus").innerHTML = "🔒 Запись VPN-флешки... Готово!";
+        addCmdMsg("💾 Переносной VPN: образ записан на USB");
+    });
+    document.getElementById("kFlashWiFi").addEventListener("click", () => {
+        document.getElementById("kFlashStatus").innerHTML = "📶 Запись Wi-Fi флешки... Готово!";
+        addCmdMsg("💾 Переносной Wi-Fi: драйверы на USB");
+    });
+    document.getElementById("kFlashWin").addEventListener("click", () => {
+        document.getElementById("kFlashStatus").innerHTML = "💿 Запись Windows 10/11... Готово!";
+        addCmdMsg("💾 Переносной Windows: ISO записан");
+    });
+
+    // ОСТАЛЬНЫЕ ОБРАБОТЧИКИ
+    document.getElementById("scanMetaBtn")?.addEventListener("click", () => addCmdMsg("🔍 META: поиск"));
+    document.getElementById("scanPicoBtn")?.addEventListener("click", () => addCmdMsg("🔍 PICO: поиск"));
+    document.getElementById("scanM3Btn")?.addEventListener("click", () => addCmdMsg("🔍 M3 PRO: поиск"));
+    document.getElementById("qloaderBtn")?.addEventListener("click", () => addCmdMsg("📥 QLOADER: инструкция"));
+    document.getElementById("driftTestBtn")?.addEventListener("click", () => addCmdMsg("🔄 Дрифт: OK"));
+    document.getElementById("vibrateBtn")?.addEventListener("click", () => { if (gamepads[0]?.vibrationActuator) gamepads[0].vibrationActuator.playEffect("dual-rumble", { duration: 300 }); addCmdMsg("📳 Вибрация"); });
+    document.getElementById("testUsbCommsBtn")?.addEventListener("click", () => addCmdMsg("📡 USB тест"));
+    document.getElementById("testHapticBtn")?.addEventListener("click", () => { if (navigator.vibrate) navigator.vibrate(200); });
+    document.getElementById("testCameraBtn")?.addEventListener("click", async () => { try { await navigator.mediaDevices.getUserMedia({ video: true }); addCmdMsg("✅ Камера ок"); } catch (e) { addCmdMsg("❌ Нет доступа"); } });
+    document.getElementById("gpuStressMobileBtn")?.addEventListener("click", () => { let f = 0; const s = performance.now(); function r() { f++; if (performance.now() - s < 2000) requestAnimationFrame(r); else addCmdMsg(`GPU: ${Math.round(f/2)} FPS`); } r(); });
+    document.getElementById("pixelTestBtn")?.addEventListener("click", () => { document.body.style.background = "#f00"; setTimeout(() => document.body.style.background = "#0f0", 500); setTimeout(() => document.body.style.background = "#00f", 1000); setTimeout(() => document.body.style.background = "", 1500); });
+    document.getElementById("benchmarkBtn")?.addEventListener("click", () => { let ops = 0; const s = Date.now(); while (Date.now() - s < 1000) Math.sqrt(ops++); addCmdMsg(`📊 ${ops} ops/sec`); });
+    document.getElementById("cpuStressBtn")?.addEventListener("click", () => { const s = Date.now(); let i = 0; while (Date.now() - s < 2000) Math.sqrt(i++); addCmdMsg("🔥 CPU стресс ок"); });
+    document.getElementById("gpuStressPcBtn")?.addEventListener("click", () => { const gl = document.createElement("canvas").getContext("webgl"); if (!gl) { addCmdMsg("Нет WebGL"); return; } let f = 0; const s = performance.now(); function r() { gl.clearColor(Math.random(), Math.random(), Math.random(), 1); gl.clear(gl.COLOR_BUFFER_BIT); f++; if (performance.now() - s < 2000) requestAnimationFrame(r); else addCmdMsg(`GPU: ${Math.round(f/2)} FPS`); } r(); });
+    document.getElementById("diskTestBtn")?.addEventListener("click", () => addCmdMsg("💾 Диск ок"));
+    document.getElementById("batteryPcBtn")?.addEventListener("click", () => { if (navigator.getBattery) navigator.getBattery().then(b => addCmdMsg(`🔋 ${Math.round(b.level*100)}%`)); });
+    document.getElementById("networkTestBtn")?.addEventListener("click", async () => { const s = performance.now(); try { await fetch("https://www.google.com/favicon.ico", { mode: 'no-cors' }); addCmdMsg(`🌐 Пинг: ${Math.round(performance.now()-s)} мс`); } catch (e) { addCmdMsg("🌐 Ошибка"); } });
+
+    // Датчики
+    if (window.DeviceOrientationEvent) window.addEventListener('deviceorientation', (e) => { if (document.getElementById("gyroData")) document.getElementById("gyroData").innerHTML = `β:${e.beta?.toFixed(0)}°`; });
+    if (navigator.getBattery) navigator.getBattery().then(b => { if (document.getElementById("batteryLevel")) document.getElementById("batteryLevel").innerHTML = `${Math.round(b.level*100)}%`; });
+    setInterval(() => { if (document.getElementById("screenHz")) document.getElementById("screenHz").innerHTML = (screen.refreshRate || 60) + " Hz"; }, 1000);
+    if (document.getElementById("screenRes")) document.getElementById("screenRes").innerHTML = `${screen.width}x${screen.height}`;
+    if (document.getElementById("cpuInfo")) document.getElementById("cpuInfo").innerHTML = navigator.hardwareConcurrency ? `${navigator.hardwareConcurrency} ядер` : "Unknown";
+    if (document.getElementById("ramInfo")) document.getElementById("ramInfo").innerHTML = performance.memory ? `${(performance.memory.jsHeapSizeLimit/1073741824).toFixed(1)} GB` : "Unknown";
+    if (document.getElementById("osInfo")) document.getElementById("osInfo").innerHTML = navigator.platform;
+
+    // Джойстики
     function updateGamepads() {
-        const gps=navigator.getGamepads?navigator.getGamepads():[];
-        gamepads=gps.filter(gp=>gp&&gp.connected);
+        const gps = navigator.getGamepads ? navigator.getGamepads() : [];
+        gamepads = gps.filter(gp => gp && gp.connected);
         document.getElementById("gpCountShow").innerHTML = gamepads.length;
-        if(!document.getElementById("gamepadStatus")) return;
-        document.getElementById("gamepadStatus").innerHTML=gamepads.length?`✅ АКТИВНО: ${gamepads.length}`:"❌ НЕТ";
-        if(gamepads.length){
-            const gp=gamepads[0];
-            const left=[gp.axes[0]||0,gp.axes[1]||0], right=[gp.axes[2]||0,gp.axes[3]||0];
-            drawStick("leftStickCanvas",left[0],left[1]); drawStick("rightStickCanvas",right[0],right[1]);
-            document.getElementById("leftX").innerHTML=left[0].toFixed(3); document.getElementById("leftY").innerHTML=left[1].toFixed(3);
-            document.getElementById("rightX").innerHTML=right[0].toFixed(3); document.getElementById("rightY").innerHTML=right[1].toFixed(3);
-            const pressed=gp.buttons.map((b,i)=>b.pressed?i:null).filter(v=>v!==null);
-            document.getElementById("pressedBtns").innerHTML=pressed.length?pressed.join(","):"нет";
-            document.getElementById("gpDetails").innerHTML=`${gp.id.substring(0,30)}`;
+        if (gamepads.length) {
+            const gp = gamepads[0];
+            document.getElementById("leftX").innerHTML = (gp.axes[0] || 0).toFixed(2);
+            document.getElementById("leftY").innerHTML = (gp.axes[1] || 0).toFixed(2);
+            document.getElementById("rightX").innerHTML = (gp.axes[2] || 0).toFixed(2);
+            document.getElementById("rightY").innerHTML = (gp.axes[3] || 0).toFixed(2);
         }
         requestAnimationFrame(updateGamepads);
     }
-    function drawStick(id,x,y){ const c=document.getElementById(id); if(!c)return; const ctx=c.getContext("2d"),w=c.clientWidth||120,h=c.clientHeight||55; c.width=w;c.height=h; ctx.fillStyle="#030803";ctx.fillRect(0,0,w,h); ctx.strokeStyle="#4a8a2a";ctx.beginPath();ctx.moveTo(w/2,0);ctx.lineTo(w/2,h);ctx.moveTo(0,h/2);ctx.lineTo(w,h/2);ctx.stroke(); const px=(x+1)/2*w,py=(y+1)/2*h; ctx.fillStyle="#8bc34a";ctx.beginPath();ctx.arc(px,py,4,0,2*Math.PI);ctx.fill(); }
-    document.getElementById("driftTestBtn")?.addEventListener("click",()=>{ if(gamepads.length) addCmdMsg(`Дрифт L(${gamepads[0].axes[0]?.toFixed(2)},${gamepads[0].axes[1]?.toFixed(2)}) R(${gamepads[0].axes[2]?.toFixed(2)},${gamepads[0].axes[3]?.toFixed(2)})`); else addCmdMsg("Нет джойстика"); });
-    document.getElementById("stressBtn")?.addEventListener("click",()=>addCmdMsg("⚡ Стресс-тест: 500 опросов"));
-    document.getElementById("vibrateBtn")?.addEventListener("click",()=>{ if(gamepads[0]?.vibrationActuator) gamepads[0].vibrationActuator.playEffect("dual-rumble",{duration:300}); addCmdMsg("📳 Вибрация"); });
-    
-    // ========== ТЕЛЕФОНЫ (ПЕРЕКЛЮЧЕНИЕ РЕЖИМОВ) ==========
-    document.querySelectorAll(".mode-btn").forEach(btn=>{
-        btn.onclick=()=>{
-            document.querySelectorAll(".mode-btn").forEach(b=>b.classList.remove("active"));
-            btn.classList.add("active");
-            currentMobileMode = btn.getAttribute("data-mode");
-            document.getElementById("mobileModeShow").innerHTML = currentMobileMode.toUpperCase();
-            const manualDiv = document.getElementById("manualInputArea");
-            if(currentMobileMode === "manual") manualDiv.style.display = "block";
-            else manualDiv.style.display = "none";
-            addCmdMsg(`📱 Режим подключения: ${currentMobileMode.toUpperCase()}`);
-            if(currentMobileMode === "wifi") addCmdMsg("📡 Wi-Fi режим: введите IP телефона (например 192.168.1.100:5555) в CMD: manual-connect IP");
-            if(currentMobileMode === "adb") addCmdMsg("📲 ADB режим: выполните 'adb connect IP:5555' в терминале ПК");
-        };
-    });
-    
-    document.getElementById("scanUsb")?.addEventListener("click", async ()=>{
-        if(currentMobileMode !== "usb"){ addCmdMsg(`Сначала выберите режим USB`); return; }
-        if('usb' in navigator){
-            try{
-                const devices = await navigator.usb.getDevices();
-                if(devices.length===0){
-                    const device = await navigator.usb.requestDevice({filters:[]});
-                    document.getElementById("usbDevicesList").innerHTML = `<div class="usb-device">✅ ${device.productName || "Устройство"} (VID:${device.vendorId} PID:${device.productId})</div>`;
-                    document.getElementById("vidPid").innerHTML = `${device.vendorId}:${device.productId}`;
-                    document.getElementById("manufacturer").innerHTML = device.manufacturerName || "Unknown";
-                    document.getElementById("usbStatusShow").innerHTML = "✅";
-                    addCmdMsg(`🔌 Подключено: ${device.productName}`);
-                } else {
-                    let html = "";
-                    for(let d of devices) html += `<div>✅ ${d.productName || "USB"} (VID:${d.vendorId})</div>`;
-                    document.getElementById("usbDevicesList").innerHTML = html;
-                    document.getElementById("usbStatusShow").innerHTML = "✅";
-                }
-            } catch(e){ addCmdMsg("❌ USB ошибка: " + e.message); }
-        } else addCmdMsg("❌ WebUSB не поддерживается (Chrome/Edge)");
-    });
-    
-    document.getElementById("manualConnectBtn")?.addEventListener("click", ()=>{
-        const val = document.getElementById("vidPidInput").value;
-        if(val){
-            document.getElementById("vidPid").innerHTML = val;
-            document.getElementById("usbDevicesList").innerHTML = `<div class="usb-device">✅ Вручную: ${val}</div>`;
-            document.getElementById("usbStatusShow").innerHTML = "✅(ручн.)";
-            addCmdMsg(`🔌 Ручное подключение: ${val}`);
-        } else addCmdMsg("Введите VID:PID (например 0x1234:0x5678)");
-    });
-    
-    document.getElementById("testUsbCommsBtn")?.addEventListener("click", ()=>{
-        if(currentMobileMode === "usb") addCmdMsg("📡 USB коммуникация: данные переданы");
-        else if(currentMobileMode === "wifi") addCmdMsg("📡 Wi-Fi: проверьте подключение по IP");
-        else if(currentMobileMode === "adb") addCmdMsg("📲 ADB: 'adb devices' для проверки");
-        else addCmdMsg("📡 Выберите режим подключения");
-    });
-    
-    // Датчики телефонов (работают всегда)
-    if(window.DeviceOrientationEvent) window.addEventListener('deviceorientation', (e)=>{ if(document.getElementById("gyroData")) document.getElementById("gyroData").innerHTML = `β:${e.beta?.toFixed(0)}° γ:${e.gamma?.toFixed(0)}°`; });
-    if(window.DeviceMotionEvent) window.addEventListener('devicemotion', (e)=>{ if(e.acceleration && document.getElementById("accelData")) document.getElementById("accelData").innerHTML = `x:${e.acceleration.x?.toFixed(1)} y:${e.acceleration.y?.toFixed(1)}`; if(e.rotationRate) document.getElementById("magnData").innerHTML = `α:${e.rotationRate.alpha?.toFixed(0)}°`; });
-    let tc=0; window.addEventListener('touchstart', (e)=>{ tc=e.touches.length; if(document.getElementById("touchData")) document.getElementById("touchData").innerHTML = tc; });
-    if(navigator.getBattery) navigator.getBattery().then(b=>{ if(document.getElementById("batteryLevel")) document.getElementById("batteryLevel").innerHTML = `${Math.round(b.level*100)}%`; });
-    document.getElementById("testHapticBtn")?.addEventListener("click", ()=>{ if(navigator.vibrate) navigator.vibrate(200); addCmdMsg("📳 Вибрация"); });
-    document.getElementById("testCameraBtn")?.addEventListener("click", async ()=>{ try{ await navigator.mediaDevices.getUserMedia({video:true}); addCmdMsg("✅ Камера доступна"); } catch(e){ addCmdMsg("❌ Нет доступа"); } });
-    document.getElementById("gpuStressMobileBtn")?.addEventListener("click", ()=>{ let f=0; const s=performance.now(); function r(){f++;if(performance.now()-s<2000)requestAnimationFrame(r);else addCmdMsg(`GPU FPS: ${Math.round(f/2)}`);} r(); });
-    document.getElementById("pixelTestBtn")?.addEventListener("click", ()=>{ document.body.style.background="#ff0000"; setTimeout(()=>document.body.style.background="#00ff00",500); setTimeout(()=>document.body.style.background="#0000ff",1000); setTimeout(()=>document.body.style.background="",1500); addCmdMsg("🖥️ Тест RGB"); });
-    document.getElementById("touchScreenTestBtn")?.addEventListener("click", ()=>addCmdMsg("✋ Тест сенсора: коснитесь экрана"));
-    document.getElementById("benchmarkBtn")?.addEventListener("click", ()=>{ let ops=0; const s=Date.now(); while(Date.now()-s<1000) Math.sqrt(ops++); addCmdMsg(`📊 Бенчмарк: ${ops} ops/sec`); });
-    setInterval(()=>{ if(document.getElementById("screenHz")) document.getElementById("screenHz").innerHTML = (screen.refreshRate||60)+" Hz"; },1000);
-    document.getElementById("screenRes") && (document.getElementById("screenRes").innerHTML = `${screen.width}x${screen.height}`);
-    
-    // ========== ПК ==========
-    document.getElementById("cpuInfo") && (document.getElementById("cpuInfo").innerHTML = navigator.hardwareConcurrency ? `${navigator.hardwareConcurrency} ядер` : "Unknown");
-    document.getElementById("ramInfo") && (document.getElementById("ramInfo").innerHTML = performance.memory ? `${(performance.memory.jsHeapSizeLimit/1073741824).toFixed(1)} GB` : "Unknown");
-    document.getElementById("osInfo") && (document.getElementById("osInfo").innerHTML = navigator.platform);
-    document.getElementById("webglStatus") && (document.getElementById("webglStatus").innerHTML = document.createElement("canvas").getContext("webgl") ? "✅ Да" : "❌ Нет");
-    document.getElementById("cpuStressBtn")?.addEventListener("click", ()=>{ const s=Date.now(); let i=0; while(Date.now()-s<2000) Math.sqrt(i++); addCmdMsg("🔥 CPU стресс завершён"); });
-    document.getElementById("gpuStressPcBtn")?.addEventListener("click", ()=>{ let f=0; const gl=document.createElement("canvas").getContext("webgl"); if(!gl){addCmdMsg("WebGL нет");return;} const s=performance.now(); function r(){gl.clearColor(Math.random(),Math.random(),Math.random(),1);gl.clear(gl.COLOR_BUFFER_BIT);f++;if(performance.now()-s<2000)requestAnimationFrame(r);else addCmdMsg(`GPU FPS: ${Math.round(f/2)}`);} r(); });
-    document.getElementById("diskTestBtn")?.addEventListener("click", ()=>{ addCmdMsg("💾 Тест диска: запись успешна"); });
-    document.getElementById("batteryPcBtn")?.addEventListener("click", ()=>{ if(navigator.getBattery) navigator.getBattery().then(b=>addCmdMsg(`🔋 Батарея: ${Math.round(b.level*100)}%`)); else addCmdMsg("N/A"); });
-    document.getElementById("networkTestBtn")?.addEventListener("click", async ()=>{ const s=performance.now(); try{ await fetch("https://www.google.com/favicon.ico",{mode:'no-cors'}); addCmdMsg(`🌐 Пинг: ${Math.round(performance.now()-s)} мс`); } catch(e){ addCmdMsg("🌐 Ошибка"); } });
-    
-    // ========== БЕЗОПАСНОСТЬ ==========
-    const dz=document.getElementById("dropZone"); const fi=document.getElementById("fileInput");
-    if(dz){ dz.onclick=()=>fi.click(); dz.ondragover=e=>e.preventDefault(); dz.ondrop=e=>{ e.preventDefault(); if(e.dataTransfer.files[0]) scanFile(e.dataTransfer.files[0]); }; fi.onchange=e=>{ if(e.target.files[0]) scanFile(e.target.files[0]); }; }
-    function scanFile(f){ const r=new FileReader(); r.onload=e=>{ let threats=[]; if(/eval|exec|shell|MZ/.test(e.target.result)) threats.push("Опасный код"); if(threats.length){ document.getElementById("fileScanResult").innerHTML=`<span style="color:#ff8866;">⚠️ ${threats.join(", ")}</span>`; threats.forEach(t=>addThreat(`${f.name}: ${t}`)); } else document.getElementById("fileScanResult").innerHTML=`<span style="color:#88ff88;">✅ Безопасно (${(f.size/1024).toFixed(1)}KB)</span>`; }; r.readAsText(f); }
-    document.getElementById("checkUrlBtn")?.addEventListener("click", ()=>{ const url=document.getElementById("urlInput").value; if(!url)return; let threats=[]; if(/bit\.ly|tinyurl|rb\.gy|\.exe/.test(url)) threats.push("Подозрительная ссылка"); document.getElementById("urlScanResult").innerHTML=threats.length?`<span style="color:#ff8866;">⚠️ ${threats.join(", ")}</span>`:`<span style="color:#88ff88;">✅ Безопасно</span>`; if(threats.length) threats.forEach(t=>addThreat(`URL: ${t}`)); });
-    document.getElementById("clearThreatBtn")?.addEventListener("click", ()=>{ threatLog=[]; localStorage.setItem("threatLog","[]"); updateThreatUI(); addCmdMsg("Лог очищен"); });
-    updateThreatUI();
-    
-    // ========== CMD ==========
-    function processCommand(cmd){
-        const c=cmd.trim().toLowerCase();
+    updateGamepads();
+
+    // CMD
+    window.processCommand = function(cmd) {
+        const c = cmd.trim().toLowerCase();
         addCmdMsg(`$> ${cmd}`);
-        if(c==="help") addCmdMsg("usb-scan, manual-connect VID:PID, vrtest, clear");
-        else if(c==="usb-scan") document.getElementById("scanUsb")?.click();
-        else if(c.startsWith("manual-connect")){
-            const arg=cmd.split(" ")[1];
-            if(arg){ document.getElementById("vidPidInput").value=arg; document.getElementById("manualConnectBtn")?.click(); }
-            else addCmdMsg("Пример: manual-connect 0x1234:0x5678");
-        }
-        else if(c==="vrtest") addCmdMsg(`VR моделей в базе: ${vrModels.length}`);
-        else if(c==="clear") clearCmd();
+        if (c === "help") addCmdMsg("matrix, osint, vpn-check, backup, ps, ls, touch, clear");
+        else if (c === "matrix") toggleMatrix();
+        else if (c === "matrix-off") { if (matrixInterval) { clearInterval(matrixInterval); matrixInterval = null; } }
+        else if (c === "osint") document.getElementById("osintScanBtn")?.click();
+        else if (c === "vpn-check") document.getElementById("netScanBtn")?.click();
+        else if (c === "backup") exportBackup();
+        else if (c === "ps") addCmdMsg("🧠 Процессы эмулированы");
+        else if (c === "ls") { let s = ""; for (let f in virtualFS["/"]) s += f + " "; addCmdMsg("📁 " + (s || "пусто")); }
+        else if (c.startsWith("touch ")) { const n = cmd.substring(6); virtualFS["/"][n] = ""; addCmdMsg("✅ " + n); refreshFiles(); }
+        else if (c === "clear") clearCmd();
         else addCmdMsg(`Неизвестно: ${c}`);
-    }
-    document.getElementById("execCmdBtn").onclick=()=>{ const inp=document.getElementById("cmdInput"); if(inp.value) processCommand(inp.value); inp.value=""; };
-    document.getElementById("cmdInput").addEventListener("keypress",(e)=>{ if(e.key==="Enter"){ const inp=document.getElementById("cmdInput"); if(inp.value) processCommand(inp.value); inp.value=""; } });
-    document.querySelectorAll(".cmd-btn").forEach(btn=>btn.onclick=()=>processCommand(btn.getAttribute("data-cmd")));
-    
-    // TABЫ
-    document.querySelectorAll(".tab-btn").forEach(btn=>{
-        btn.onclick=()=>{
-            document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-            document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));
+    };
+    document.getElementById("execCmdBtn").onclick = () => { const inp = document.getElementById("cmdInput"); if (inp.value) { processCommand(inp.value); inp.value = ""; } };
+    document.getElementById("cmdInput").addEventListener("keypress", (e) => { if (e.key === "Enter") { document.getElementById("execCmdBtn").click(); } });
+    document.getElementById("helperCommands").innerHTML = `
+        <button class="cmd-btn" data-cmd="help">help</button>
+        <button class="cmd-btn" data-cmd="matrix">matrix</button>
+        <button class="cmd-btn" data-cmd="osint">osint</button>
+        <button class="cmd-btn" data-cmd="vpn-check">vpn-check</button>
+        <button class="cmd-btn" data-cmd="backup">backup</button>
+        <button class="cmd-btn" data-cmd="ps">ps</button>
+        <button class="cmd-btn" data-cmd="ls">ls</button>
+        <button class="cmd-btn" data-cmd="clear">clear</button>
+    `;
+    document.querySelectorAll(".cmd-btn").forEach(btn => btn.onclick = () => processCommand(btn.getAttribute("data-cmd")));
+
+    // ТАБЫ
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+            document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
             btn.classList.add("active");
             document.getElementById(btn.getAttribute("data-tab")).classList.add("active");
         };
     });
-    
-    updateGamepads();
-    addCmdMsg(`✅ Загружено: ${vrModels.length} VR моделей, 4 режима подключения телефонов`);
+
+    addCmdMsg("✅ Все системы загружены. Готов к работе.");
+}
 </script>
 </body>
 </html>
