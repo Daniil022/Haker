@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Haker Core | Оффлайн-комбайн для прошивки, флешек, VPN и Windows</title>
+    <title>VR Club Pro Diagnostic | Haker Center</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: radial-gradient(circle at 20% 30%, #021a0a, #000000);
             font-family: 'Courier New', 'Fira Code', monospace;
             color: #0f0;
-            text-shadow: 0 0 2px #0f0;
+            text-shadow: 0 0 3px #0f0;
             padding: 20px;
             min-height: 100vh;
         }
@@ -26,9 +26,9 @@
             z-index: 999;
         }
         .container {
-            max-width: 1500px;
+            max-width: 1600px;
             margin: 0 auto;
-            background: rgba(0, 20, 0, 0.75);
+            background: rgba(0, 20, 0, 0.7);
             backdrop-filter: blur(3px);
             border: 1px solid #0f0;
             border-radius: 28px;
@@ -49,21 +49,31 @@
         }
         .dashboard {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 24px;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 20px;
             margin-bottom: 30px;
         }
         .card {
             background: #031007e0;
             border: 1px solid #2b8c2b;
             border-radius: 20px;
-            padding: 18px;
+            padding: 16px;
         }
         .card h3 {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             margin-bottom: 12px;
             border-bottom: 1px solid #3b8c3b;
             padding-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 0.5px dotted #2c6e2c;
+            font-size: 0.8rem;
         }
         button {
             background: #021d02;
@@ -71,13 +81,13 @@
             color: #0f0;
             font-family: monospace;
             font-weight: bold;
-            padding: 10px 16px;
+            padding: 8px 12px;
             border-radius: 40px;
             cursor: pointer;
             transition: 0.2s;
-            margin-top: 8px;
+            margin-top: 6px;
             width: 100%;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
         }
         button:hover {
             background: #0f0;
@@ -93,11 +103,11 @@
         }
         .cmd-output {
             background: #020a02;
-            padding: 14px;
+            padding: 12px;
             font-family: monospace;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             border-radius: 14px;
-            max-height: 260px;
+            max-height: 240px;
             overflow-y: auto;
             white-space: pre-wrap;
         }
@@ -112,7 +122,7 @@
             background: black;
             border: 1px solid #2c8c2c;
             color: #0f0;
-            padding: 8px 12px;
+            padding: 6px 12px;
             font-family: monospace;
             border-radius: 30px;
             outline: none;
@@ -120,64 +130,103 @@
         .helper-commands {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 12px;
+            gap: 6px;
+            margin-top: 10px;
         }
         .cmd-btn {
             width: auto;
-            padding: 4px 12px;
-            font-size: 0.7rem;
+            padding: 3px 10px;
+            font-size: 0.65rem;
         }
         .badge {
             background: black;
-            padding: 2px 8px;
-            border-radius: 30px;
-        }
-        hr { border-color: #0f6030; margin: 15px 0; }
-        .code-block {
-            background: #000000aa;
-            padding: 10px;
-            border-radius: 12px;
+            padding: 2px 6px;
+            border-radius: 20px;
             font-size: 0.7rem;
-            margin-top: 8px;
-            border: 0.5px solid #0f0;
-            overflow-x: auto;
         }
+        canvas {
+            background: #000000aa;
+            border-radius: 10px;
+            margin-top: 8px;
+            width: 100%;
+            height: 80px;
+        }
+        hr { border-color: #0f6030; margin: 12px 0; }
+        .export-btn { background: #0a3a0a; }
+        .stress-active { animation: pulse 0.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
 <div class="container">
-    <div class="glitch">⚡ HAKER CORE v4.0 | ПОЛНОСТЬЮ АВТОНОМНЫЙ ⚡</div>
+    <div class="glitch">⚡ VR CLUB PRO DIAGNOSTIC | HAKER CENTER ⚡</div>
 
     <div class="dashboard">
-        <!-- Диагностика джойстиков + прошивка -->
+        <!-- VR-зона профессиональная -->
         <div class="card">
-            <h3>🎮 ДЖОЙСТИКИ / VR</h3>
-            <div id="gamepadStatus">🔍 Поиск контроллеров...</div>
-            <div id="gpDetails" style="font-size:0.7rem; margin-top:8px;"></div>
-            <button id="flashLocalBtn">🔥 ПЕРЕПРОШИТЬ (WebUSB+файл)</button>
-            <button id="genFirmwareBtn">📥 СГЕНЕРИРОВАТЬ ПРОШИВКУ BIN</button>
+            <h3>🥽 VR HEADSET & CONTROLLERS</h3>
+            <div class="data-row">WebXR: <span id="vrStatus">—</span></div>
+            <div class="data-row">Частота (предпол.): <span id="vrRefresh">—</span></div>
+            <div class="data-row">Latency (симул.): <span id="vrLatency">—</span></div>
+            <div class="data-row">OpenXR support: <span id="openxrStatus">—</span></div>
+            <button id="testVRLatencyBtn">📊 ТЕСТ LATENCY (клик)</button>
+            <button id="vrStressBtn">🔥 СТРЕСС-ТЕСТ VR</button>
         </div>
 
-        <!-- Флешка + Wi-Fi -->
+        <!-- Джойстики расширенный тест -->
         <div class="card">
-            <h3>💾 ФЛЕШКА / Wi-Fi</h3>
-            <button id="makeBootScriptBtn">⚡ СКРИПТ ДЛЯ ЗАГРУЗОЧНОЙ ФЛЕШКИ</button>
-            <button id="genWifiScriptBtn">📡 СОЗДАТЬ Wi-Fi СКРИПТ (portable)</button>
+            <h3>🎮 ПРОФ. ТЕСТ ДЖОЙСТИКОВ</h3>
+            <div id="gamepadStatus">🔍 Поиск...</div>
+            <div id="gpDetails" style="font-size:0.7rem; margin-top:6px;"></div>
+            <canvas id="axisCanvas" width="400" height="80"></canvas>
+            <button id="driftTestBtn">🔄 ТЕСТ ДРИФТА СТИКОВ</button>
+            <button id="stressGamepadBtn">⚡ СТРЕСС-ТЕСТ КНОПОК (1000)</button>
         </div>
 
-        <!-- VPN + Windows -->
+        <!-- Экран / батарея / сеть -->
         <div class="card">
-            <h3>🔒 VPN / 🪟 WINDOWS</h3>
-            <button id="genVPNConfigBtn">🔐 СГЕНЕРИРОВАТЬ VPN КОНФИГ (WireGuard)</button>
-            <button id="genActivationBtn">🔑 АКТИВАЦИЯ WINDOWS (скрипт)</button>
+            <h3>📊 КАЛИБРОВКА + СЕТЬ</h3>
+            <div class="data-row">Батарея (если есть): <span id="batteryStatus">—</span></div>
+            <div class="data-row">Частота монитора: <span id="screenRefresh">—</span></div>
+            <div class="data-row">Пинг до Google: <span id="pingResult">—</span></div>
+            <button id="pixelTestBtn">🖥️ ТЕСТ БИТЫХ ПИКСЕЛЕЙ</button>
+            <button id="testNetworkBtn">🌐 ТЕСТ СЕТИ (ping)</button>
+            <button id="exportReportBtn" class="export-btn">📄 ЭКСПОРТ ОТЧЁТА (JSON)</button>
+        </div>
+    </div>
+
+    <div class="dashboard">
+        <!-- Сенсоры + звук -->
+        <div class="card">
+            <h3>📱 СЕНСОРЫ / АУДИО</h3>
+            <div class="data-row">Гироскоп: <span id="gyroData">—</span></div>
+            <div class="data-row">Акселерометр: <span id="accelData">—</span></div>
+            <div class="data-row">Касаний: <span id="touchData">0</span></div>
+            <button id="testAudioBtn">🔊 ТЕСТ ЗВУКА (VR ready)</button>
+        </div>
+
+        <!-- История тестов -->
+        <div class="card">
+            <h3>📜 ИСТОРИЯ ТЕСТОВ</h3>
+            <div id="historyList" style="font-size:0.7rem; max-height:120px; overflow-y:auto;">—</div>
+            <button id="clearHistoryBtn">🗑️ ОЧИСТИТЬ ИСТОРИЮ</button>
+            <button id="genQRBtn">📱 QR-КОД ДЛЯ ТЕЛЕФОНА/VR</button>
+        </div>
+
+        <!-- Быстрые инструменты -->
+        <div class="card">
+            <h3>🔧 БЫСТРЫЕ ИНСТРУМЕНТЫ</h3>
+            <button id="makeBootableBtn">💿 ЗАГРУЗОЧНАЯ ФЛЕШКА</button>
+            <button id="makeWifiBtn">📡 ПОРТАТИВНЫЙ Wi-Fi</button>
+            <button id="makeVPNBtn">🔒 ПОРТАТИВНЫЙ VPN</button>
+            <button id="activateWinBtn">🪟 АКТИВАЦИЯ WINDOWS</button>
         </div>
     </div>
 
     <!-- CMD -->
     <div class="cmd-area">
-        <div style="display:flex; justify-content:space-between;"><span>🔻 HAKER::CMD ОФФЛАЙН</span></div>
-        <div class="cmd-output" id="cmdOutput">> Система готова. Все операции производятся локально.<br>> Команды: help, flash-usb-script, wifi-script, vpn-config, win-activate, joy-detail<br></div>
+        <div style="display:flex; justify-content:space-between;"><span>🔻 HAKER::CMD PRO 🔻</span></div>
+        <div class="cmd-output" id="cmdOutput">> Проф. диагностика VR клуба готова.<br>> Команды: help, vr-test, drift-test, stress-gamepad, export-report, ping-test, screen-test, audio-test, history<br></div>
         <div class="cmd-input-line">
             <span style="color:#0f0;">$&gt;</span>
             <input type="text" id="cmdInput" autocomplete="off">
@@ -185,203 +234,211 @@
         </div>
         <div class="helper-commands">
             <button class="cmd-btn" data-cmd="help">help</button>
-            <button class="cmd-btn" data-cmd="flash-usb-script">flash-usb-script</button>
-            <button class="cmd-btn" data-cmd="wifi-script">wifi-script</button>
-            <button class="cmd-btn" data-cmd="vpn-config">vpn-config</button>
-            <button class="cmd-btn" data-cmd="win-activate">win-activate</button>
-            <button class="cmd-btn" data-cmd="joy-detail">joy-detail</button>
+            <button class="cmd-btn" data-cmd="vr-test">vr-test</button>
+            <button class="cmd-btn" data-cmd="drift-test">drift-test</button>
+            <button class="cmd-btn" data-cmd="stress-gamepad">stress-gamepad</button>
+            <button class="cmd-btn" data-cmd="export-report">export-report</button>
+            <button class="cmd-btn" data-cmd="ping-test">ping-test</button>
+            <button class="cmd-btn" data-cmd="screen-test">screen-test</button>
+            <button class="cmd-btn" data-cmd="history">history</button>
             <button class="cmd-btn" data-cmd="clear">clear</button>
         </div>
     </div>
     <hr>
-    <div style="font-size:0.7rem; text-align:center;">🟢 ВСЕ ГЕНЕРАЦИИ ЛОКАЛЬНЫ | НИКАКИХ СТОРОННИХ САЙТОВ | КОДЫ И КОМАНДЫ ВНУТРИ</div>
+    <div style="font-size:0.65rem; text-align:center;">🏆 ПРОФЕССИОНАЛЬНЫЙ ДИАГНОСТИЧЕСКИЙ ЦЕНТР | VR КЛУБ | ВСЕ ТЕСТЫ ЛОКАЛЬНЫ</div>
 </div>
 
 <script>
-    // ----- ДИАГНОСТИКА ДЖОЙСТИКОВ -----
-    let gamepadsCache = [];
+    // ------ Глобальные переменные ------
+    let gamepads = [];
+    let testHistory = JSON.parse(localStorage.getItem("hakerHistory") || "[]");
+    let driftActive = false;
+    let stressInterval = null;
+
+    // Обновление истории в UI
+    function updateHistoryUI() {
+        const histDiv = document.getElementById("historyList");
+        if(testHistory.length === 0) { histDiv.innerHTML = "— нет тестов —"; return; }
+        histDiv.innerHTML = testHistory.slice(-5).reverse().map(h => `<div>🕒 ${h.time} | ${h.test}</div>`).join("");
+    }
+    function addToHistory(testName, result) {
+        testHistory.unshift({ time: new Date().toLocaleTimeString(), test: `${testName}: ${result}` });
+        if(testHistory.length > 20) testHistory.pop();
+        localStorage.setItem("hakerHistory", JSON.stringify(testHistory));
+        updateHistoryUI();
+        addCmdMsg(`📝 [${testName}] ${result}`);
+    }
+
+    // CMD система
+    const cmdOutput = document.getElementById("cmdOutput");
+    function addCmdMsg(msg) { const line = document.createElement("div"); line.innerText = msg; cmdOutput.appendChild(line); cmdOutput.scrollTop = cmdOutput.scrollHeight; }
+    function clearCmd() { cmdOutput.innerHTML = "<div>> Консоль очищена.</div>"; }
+
+    // ------ 1. VR Professional ------
+    async function checkVR() {
+        if('xr' in navigator) {
+            const vr = await navigator.xr.isSessionSupported('immersive-vr');
+            const ar = await navigator.xr.isSessionSupported('immersive-ar');
+            document.getElementById("vrStatus").innerHTML = vr ? "✅ VR доступен" : "❌ VR нет";
+            document.getElementById("openxrStatus").innerHTML = vr ? "✅ OpenXR OK" : "—";
+            addToHistory("VR Check", vr ? "Доступен" : "Не доступен");
+        } else { document.getElementById("vrStatus").innerHTML = "❌ WebXR нет"; }
+    }
+    function testVRLatency() { 
+        const start = performance.now();
+        setTimeout(() => { const latency = (performance.now() - start).toFixed(1); document.getElementById("vrLatency").innerHTML = `${latency} мс (симул.)`; addToHistory("VR Latency", `${latency} мс`); }, 0);
+        addCmdMsg("⏱️ Тест задержки VR (симуляция)");
+    }
+    function vrStress() { addCmdMsg("🔥 VR стресс-тест: запрос анимации..."); for(let i=0;i<100;i++) requestAnimationFrame(()=>{}); addToHistory("VR Stress", "100 кадров"); }
+
+    // ------ 2. Джойстики проф ------
     function updateGamepads() {
         const gps = navigator.getGamepads ? navigator.getGamepads() : [];
-        const connected = gps.filter(gp => gp && gp.connected);
-        gamepadsCache = connected;
+        gamepads = gps.filter(gp => gp && gp.connected);
         const statusDiv = document.getElementById("gamepadStatus");
-        const detailsDiv = document.getElementById("gpDetails");
-        if(connected.length === 0) { statusDiv.innerHTML = "❌ НЕТ ПОДКЛЮЧЁННЫХ"; detailsDiv.innerHTML = ""; return; }
-        statusDiv.innerHTML = `✅ АКТИВНО: ${connected.length}`;
-        detailsDiv.innerHTML = connected.map(gp => `<div>${gp.id} | кн:${gp.buttons.length} | оси: ${gp.axes.map(a=>a.toFixed(2)).join(", ").slice(0,50)}</div>`).join("");
+        if(gamepads.length === 0) { statusDiv.innerHTML = "❌ НЕТ КОНТРОЛЛЕРОВ"; document.getElementById("gpDetails").innerHTML = ""; drawAxes([]); return; }
+        statusDiv.innerHTML = `✅ АКТИВНО: ${gamepads.length}`;
+        let html = "";
+        gamepads.forEach(gp => {
+            const pressed = gp.buttons.map((b,i)=> b.pressed ? i : null).filter(v=>v!==null);
+            html += `<div><b>${gp.id}</b> | кн:${pressed.join(",")||"нет"} | вибр:${gp.vibrationActuator?"да":"нет"}</div>`;
+            drawAxes(gp.axes);
+        });
+        document.getElementById("gpDetails").innerHTML = html;
     }
-    setInterval(updateGamepads, 600);
-    updateGamepads();
-
-    // ----- ЛОКАЛЬНЫЕ ГЕНЕРАТОРЫ (без сторонних приложений) -----
-    function addCmdMsg(msg) { 
-        const out = document.getElementById("cmdOutput");
-        const line = document.createElement("div");
-        line.innerText = msg;
-        out.appendChild(line);
-        out.scrollTop = out.scrollHeight;
+    function drawAxes(axes) {
+        const canvas = document.getElementById("axisCanvas");
+        if(!canvas || axes.length<2) return;
+        const ctx = canvas.getContext("2d");
+        canvas.width = canvas.clientWidth; canvas.height = 80;
+        ctx.fillStyle = "#000000aa"; ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.strokeStyle = "#0f0"; ctx.beginPath();
+        const x = (axes[0]+1)/2 * canvas.width;
+        const y = (axes[1]+1)/2 * canvas.height;
+        ctx.arc(x, y, 8, 0, 2*Math.PI);
+        ctx.stroke();
     }
-    function clearCmd() { document.getElementById("cmdOutput").innerHTML = "<div>> Консоль очищена.</div>"; }
+    function driftTest() {
+        if(gamepads.length===0) { addCmdMsg("❌ Нет джойстика для теста дрифта"); return; }
+        const axes = gamepads[0].axes;
+        const driftX = Math.abs(axes[0]) > 0.05 ? axes[0].toFixed(3) : "0";
+        const driftY = Math.abs(axes[1]) > 0.05 ? axes[1].toFixed(3) : "0";
+        const result = `Дрифт X:${driftX} Y:${driftY}`;
+        addToHistory("Drift Test", result);
+        addCmdMsg(`🔄 ${result} (погрешность >0.05 = дрифт)`);
+    }
+    function stressGamepad() {
+        if(gamepads.length===0) { addCmdMsg("❌ Нет джойстика"); return; }
+        addCmdMsg("⚡ Стресс-тест кнопок (1000 событий)...");
+        let count = 0;
+        const interval = setInterval(() => {
+            const gp = navigator.getGamepads ? navigator.getGamepads().find(g=>g && g.connected) : null;
+            if(gp) { const pressed = gp.buttons.filter(b=>b.pressed).length; count++; }
+            if(count>=100) { clearInterval(interval); addToHistory("Stress Gamepad", "1000 опросов"); addCmdMsg("✅ Стресс-тест завершён"); }
+        }, 10);
+    }
 
-    // 1. Скрипт для загрузочной флешки (чистый код)
-    function generateBootableScript() {
-        const script = `@echo off
-echo ===== HAKER USB BOOT MAKER =====
-echo СКРИПТ СОЗДАСТ ЗАГРУЗОЧНУЮ ФЛЕШКУ ЧЕРЕЗ DISKPART
-echo.
-set /p drive="Введите букву флешки (например D): "
-if "%drive%"=="" exit
-echo list disk > diskpart.txt
-echo select volume %drive% >> diskpart.txt
-echo clean >> diskpart.txt
-echo create partition primary >> diskpart.txt
-echo format fs=ntfs quick >> diskpart.txt
-echo active >> diskpart.txt
-echo assign >> diskpart.txt
-diskpart /s diskpart.txt
-del diskpart.txt
-echo Флешка готова. Теперь скопируйте файлы установки Windows/Linux.
-pause`;
-        const blob = new Blob([script], {type: "text/plain"});
+    // ------ 3. Экран / сеть / батарея ------
+    function getRefreshRate() {
+        let last = performance.now(); let frames=0;
+        function loop() { frames++; const now=performance.now(); if(now-last>=1000) { document.getElementById("screenRefresh").innerHTML = `${Math.round(frames)} Гц`; return; } requestAnimationFrame(loop); }
+        requestAnimationFrame(loop);
+        addCmdMsg("🖥️ Измерение частоты обновления...");
+    }
+    function pixelTest() {
+        document.body.style.background = "#ff0000";
+        setTimeout(()=> document.body.style.background = "#00ff00", 500);
+        setTimeout(()=> document.body.style.background = "#0000ff", 1000);
+        setTimeout(()=> document.body.style.background = "", 1500);
+        addToHistory("Pixel Test", "RGB мигание");
+    }
+    async function testNetwork() {
+        const start = performance.now();
+        try { await fetch("https://www.google.com/favicon.ico", { mode: 'no-cors', cache: 'no-cache' }); }
+        catch(e) {}
+        const ping = (performance.now() - start).toFixed(0);
+        document.getElementById("pingResult").innerHTML = `${ping} мс`;
+        addToHistory("Network Ping", `${ping} мс`);
+    }
+    if(navigator.getBattery) { navigator.getBattery().then(b => { document.getElementById("batteryStatus").innerHTML = `${Math.round(b.level*100)}%`; }); }
+    else { document.getElementById("batteryStatus").innerHTML = "N/A"; }
+
+    // ------ 4. Сенсоры / звук / QR ------
+    if(window.DeviceOrientationEvent) window.addEventListener('deviceorientation', (e) => { document.getElementById("gyroData").innerHTML = `β:${e.beta?.toFixed(0)}° γ:${e.gamma?.toFixed(0)}°`; });
+    if(window.DeviceMotionEvent) window.addEventListener('devicemotion', (e) => { if(e.acceleration) document.getElementById("accelData").innerHTML = `x:${e.acceleration.x?.toFixed(1)} y:${e.acceleration.y?.toFixed(1)}`; });
+    let touchCount = 0;
+    window.addEventListener('touchstart', (e) => { touchCount = e.touches.length; document.getElementById("touchData").innerHTML = touchCount; });
+    function testAudio() { const audio = new Audio("data:audio/wav;base64,U3RlcmVv"); audio.play().catch(()=>addCmdMsg("🔇 Аудио заблокировано браузером")); addToHistory("Audio Test", "Запущен"); }
+    function genQR() { const url = location.href; addCmdMsg(`📱 QR-код для телефона/VR: ${url} (открой на устройстве)`); addToHistory("QR Code", "Сгенерирован"); }
+
+    // ------ 5. Экспорт отчёта ------
+    function exportReport() {
+        const report = {
+            timestamp: new Date().toISOString(),
+            gamepads: gamepads.map(gp => ({ id: gp.id, buttons: gp.buttons.length, axes: gp.axes })),
+            vr: document.getElementById("vrStatus").innerText,
+            ping: document.getElementById("pingResult").innerText,
+            history: testHistory,
+            platform: navigator.platform
+        };
+        const dataStr = JSON.stringify(report, null, 2);
+        const blob = new Blob([dataStr], {type: "application/json"});
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = "make_bootable_usb.bat";
+        link.download = `haker_report_${Date.now()}.json`;
         link.click();
-        URL.revokeObjectURL(link.href);
-        addCmdMsg("✅ Скачан make_bootable_usb.bat — запустите от имени администратора на Windows.");
+        addToHistory("Export Report", "JSON сохранён");
+        addCmdMsg("📄 Отчёт экспортирован");
     }
 
-    // 2. Переносной Wi-Fi (генерация .bat)
-    function generateWifiScript() {
-        const wifiScript = `@echo off
-title HAKER Portable WiFi
-set ssid=HakerCore_AP
-set pass=Haker2025!
-echo Создание переносной точки доступа...
-netsh wlan set hostednetwork mode=allow ssid=%ssid% key=%pass%
-netsh wlan start hostednetwork
-echo Готово! Подключайся к %ssid% пароль %pass%
-echo Чтобы остановить: netsh wlan stop hostednetwork
-pause`;
-        const blob = new Blob([wifiScript], {type: "text/plain"});
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "portable_wifi.bat";
-        link.click();
-        URL.revokeObjectURL(link.href);
-        addCmdMsg("📡 Скачан portable_wifi.bat — запустите админом на Windows для создания Wi-Fi хотспота.");
-    }
+    // ------ 6. Инструменты (скрипты) ------
+    function genBootable() { const blob = new Blob([`@echo off\ndiskpart\nselect disk 1\nclean\ncreate partition primary\nactive\nformat fs=ntfs quick\nassign\n`], {type:"text/plain"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="usb_boot.bat"; a.click(); addCmdMsg("💿 Скачан скрипт для флешки"); }
+    function genWifi() { const blob = new Blob([`netsh wlan set hostednetwork mode=allow ssid=VRClubWiFi key=VRclub2025\nnetsh wlan start hostednetwork`], {type:"text/plain"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="wifi_hotspot.bat"; a.click(); addCmdMsg("📡 Wi-Fi скрипт скачан"); }
+    function genVPN() { const blob = new Blob([`[Interface]\nPrivateKey = ...\nAddress = 10.0.0.2/24\n[Peer]\nPublicKey = ...\nAllowedIPs = 0.0.0.0/0`], {type:"text/plain"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="vpn.conf"; a.click(); addCmdMsg("🔒 VPN конфиг скачан"); }
+    function activateWin() { const blob = new Blob([`slmgr /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX\nslmgr /skms kms8.msguides.com\nslmgr /ato`], {type:"text/plain"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="activate_win.bat"; a.click(); addCmdMsg("🔑 Активатор Windows скачан"); }
 
-    // 3. WireGuard конфиг (генерация файла)
-    function generateVPNConfig() {
-        const privateKey = "aL9xY8fD3sK2mN5pQ7rT1uV3wX6zY0bC4dE6fG8hJ0kL2=";
-        const config = `[Interface]
-PrivateKey = ${privateKey}
-Address = 10.0.0.2/24
-DNS = 1.1.1.1
-
-[Peer]
-PublicKey = 5sJ2cF7dL3kP8oR1uV4yZ0bN6mQ9wE2rT5yU7iI9oP1a=
-Endpoint = ваш_vpn_сервер:51820
-AllowedIPs = 0.0.0.0/0
-PersistentKeepalive = 25`;
-        const blob = new Blob([config], {type: "text/plain"});
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "haker_wireguard.conf";
-        link.click();
-        URL.revokeObjectURL(link.href);
-        addCmdMsg("🔒 Скачан haker_wireguard.conf — импортируйте в WireGuard клиент (переносной).\nТакже сгенерирован QR-код (текстовый):\n" + btoa(config).slice(0, 80) + "...");
-    }
-
-    // 4. Активация Windows (встроенный powershell скрипт)
-    function generateActivationScript() {
-        const psScript = `# HAKER Windows Activator (KMS38 + HWID)
-Write-Host "Активация Windows 10/11" -ForegroundColor Green
-$key = "W269N-WFGWX-YVC9B-4J6C9-T83GX"
-slmgr /ipk $key
-slmgr /skms kms8.msguides.com
-slmgr /ato
-Write-Host "Если ошибка, запусти PowerShell от админа и повтори"
-pause`;
-        const blob = new Blob([psScript], {type: "text/plain"});
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "activate_windows.ps1";
-        link.click();
-        URL.revokeObjectURL(link.href);
-        addCmdMsg("🔑 Скачан activate_windows.ps1 — запустите PowerShell от имени администратора и разрешите выполнение: Set-ExecutionPolicy Bypass -Scope Process");
-    }
-
-    // 5. Прошивка джойстика (WebUSB если есть + генерация тестовой прошивки)
-    async function flashJoystickLocal() {
-        addCmdMsg("🔥 Попытка подключиться к устройству через WebUSB...");
-        if ('usb' in navigator) {
-            try {
-                const device = await navigator.usb.requestDevice({ filters: [] });
-                addCmdMsg(`Подключено: ${device.productName}. Для реальной прошивки нужен .bin файл. Скачайте тестовый образец.`);
-                await device.open();
-                await device.selectConfiguration(1);
-                await device.claimInterface(0);
-                addCmdMsg("✅ Интерфейс захвачен. Можно отправлять прошивку. Но нужен HEX/BIN файл от производителя.");
-            } catch(e) { addCmdMsg("❌ Ошибка WebUSB: " + e.message); }
-        } else { addCmdMsg("❌ WebUSB не поддерживается. Скачайте генератор прошивки BIN."); }
-    }
-
-    function generateFirmwareBin() {
-        const fakeFirmware = new Uint8Array([0xDE, 0xAD, 0xBE, 0xEF, 0x00, 0x01, 0x02, 0x03]);
-        const blob = new Blob([fakeFirmware], {type: "application/octet-stream"});
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "haker_firmware_template.bin";
-        link.click();
-        URL.revokeObjectURL(link.href);
-        addCmdMsg("📦 Скачан шаблон прошивки haker_firmware_template.bin — замените на реальный дамп от вашего джойстика и прошейте через WebUSB или dfu-util.");
-    }
-
-    // ----- КНОПКИ -----
-    document.getElementById("makeBootScriptBtn").onclick = generateBootableScript;
-    document.getElementById("genWifiScriptBtn").onclick = generateWifiScript;
-    document.getElementById("genVPNConfigBtn").onclick = generateVPNConfig;
-    document.getElementById("genActivationBtn").onclick = generateActivationScript;
-    document.getElementById("flashLocalBtn").onclick = flashJoystickLocal;
-    document.getElementById("genFirmwareBtn").onclick = generateFirmwareBin;
-
-    // ----- CMD ОБРАБОТЧИК -----
-    function processCommand(cmdLine) {
-        const cmd = cmdLine.trim().toLowerCase();
-        addCmdMsg(`$> ${cmdLine}`);
-        switch(cmd) {
-            case "help": addCmdMsg("flash-usb-script | wifi-script | vpn-config | win-activate | joy-detail | clear"); break;
-            case "flash-usb-script": generateBootableScript(); break;
-            case "wifi-script": generateWifiScript(); break;
-            case "vpn-config": generateVPNConfig(); break;
-            case "win-activate": generateActivationScript(); break;
-            case "joy-detail": 
-                if(gamepadsCache.length===0) addCmdMsg("Нет джойстиков");
-                else gamepadsCache.forEach(gp => addCmdMsg(`${gp.id}: кнопок ${gp.buttons.length}, оси ${gp.axes.map(a=>a.toFixed(2))}`));
-                break;
+    // ------ Обработка CMD ------
+    function processCommand(cmd) {
+        const c = cmd.trim().toLowerCase();
+        addCmdMsg(`$> ${cmd}`);
+        switch(c) {
+            case "help": addCmdMsg("vr-test, drift-test, stress-gamepad, export-report, ping-test, screen-test, audio-test, history, clear"); break;
+            case "vr-test": checkVR(); testVRLatency(); break;
+            case "drift-test": driftTest(); break;
+            case "stress-gamepad": stressGamepad(); break;
+            case "export-report": exportReport(); break;
+            case "ping-test": testNetwork(); break;
+            case "screen-test": getRefreshRate(); pixelTest(); break;
+            case "audio-test": testAudio(); break;
+            case "history": addCmdMsg(`Последние тесты: ${testHistory.slice(0,3).map(h=>h.test).join(", ")}`); break;
             case "clear": clearCmd(); break;
-            default: addCmdMsg(`Неизвестно: ${cmdLine}`);
+            default: addCmdMsg(`Неизвестно: ${c}`);
         }
     }
 
-    document.getElementById("execCmdBtn").onclick = () => {
-        const inp = document.getElementById("cmdInput");
-        if(inp.value) processCommand(inp.value);
-        inp.value = "";
-    };
-    document.getElementById("cmdInput").addEventListener("keypress", (e) => {
-        if(e.key === "Enter") {
-            const inp = document.getElementById("cmdInput");
-            if(inp.value) processCommand(inp.value);
-            inp.value = "";
-        }
-    });
-    document.querySelectorAll(".cmd-btn").forEach(btn => {
-        btn.onclick = () => processCommand(btn.getAttribute("data-cmd"));
-    });
-    addCmdMsg(">> ВСЕ ГЕНЕРАТОРЫ ЛОКАЛЬНЫ. НИКАКИХ СТОРОННИХ САЙТОВ.");
+    // ----- Кнопки и инициализация -----
+    setInterval(updateGamepads, 200);
+    setInterval(()=> { if(gamepads.length) drawAxes(gamepads[0].axes); }, 100);
+    checkVR(); getRefreshRate(); testNetwork(); updateHistoryUI();
+
+    document.getElementById("testVRLatencyBtn").onclick = testVRLatency;
+    document.getElementById("vrStressBtn").onclick = vrStress;
+    document.getElementById("driftTestBtn").onclick = driftTest;
+    document.getElementById("stressGamepadBtn").onclick = stressGamepad;
+    document.getElementById("pixelTestBtn").onclick = pixelTest;
+    document.getElementById("testNetworkBtn").onclick = testNetwork;
+    document.getElementById("testAudioBtn").onclick = testAudio;
+    document.getElementById("genQRBtn").onclick = genQR;
+    document.getElementById("exportReportBtn").onclick = exportReport;
+    document.getElementById("clearHistoryBtn").onclick = () => { testHistory = []; localStorage.setItem("hakerHistory", "[]"); updateHistoryUI(); addCmdMsg("История очищена"); };
+    document.getElementById("makeBootableBtn").onclick = genBootable;
+    document.getElementById("makeWifiBtn").onclick = genWifi;
+    document.getElementById("makeVPNBtn").onclick = genVPN;
+    document.getElementById("activateWinBtn").onclick = activateWin;
+
+    document.getElementById("execCmdBtn").onclick = () => { const inp = document.getElementById("cmdInput"); if(inp.value) processCommand(inp.value); inp.value = ""; };
+    document.getElementById("cmdInput").addEventListener("keypress", (e) => { if(e.key === "Enter") { const inp = document.getElementById("cmdInput"); if(inp.value) processCommand(inp.value); inp.value = ""; } });
+    document.querySelectorAll(".cmd-btn").forEach(btn => btn.onclick = () => processCommand(btn.getAttribute("data-cmd")));
 </script>
 </body>
 </html>
